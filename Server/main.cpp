@@ -6,10 +6,13 @@
 #include "websocket.h"
 #include <windows.h>
 #include <process.h>
+#include "pong50926235.h"
 
 using namespace std;
 
 webSocket server;
+map<int, string> clientID_username_map;
+
 
 /* called when a client connects */
 void openHandler(int clientID){
@@ -73,6 +76,32 @@ void periodicHandler(){
     }
 }
 
+/***********************************************************************
+ *  Parses strings in the format :
+ *  " username | ballPos | ballDirX | ballDirY | paddleTop | INPUT_KEYS_STRING"
+ *  the INPUT_KEYS_STRING will be a string of key characters (i.e. w or W or s or S) since last update packet
+ * @param clientID
+ * @param message
+ ***********************************************************************/
+void parseStringUpdatePacket(int clientID, string message){
+    vector<string> tokens = split(message);
+    if(!clientID_username_map.contains(clientID, tokens.at(0))){
+        clientID_username_map.insert(clientID, tokens.at(0));
+    }
+
+    
+
+
+}
+vector<string> split(string toSplit){
+    stringstream ss($toSplit);
+    string item;
+    vector<string> tokens;
+    while(getline(ss, item, '|')){
+        tokens.push_back(item);
+    }
+    return tokens;
+}
 
 int main(int argc, char *argv[]){
 
