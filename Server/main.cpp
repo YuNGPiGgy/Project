@@ -12,6 +12,7 @@ using namespace std;
 
 webSocket server;
 map<int, string> clientID_username_map;
+Pong pong;
 
 
 /* called when a client connects */
@@ -78,7 +79,7 @@ void periodicHandler(){
 
 /***********************************************************************
  *  Parses strings in the format :
- *  " username | ballPos | ballDirX | ballDirY | paddleTop | INPUT_KEYS_STRING"
+ *  " username | ballPosX | ballPosY | ballDirX | ballDirY | paddleTop | INPUT_KEYS_STRING"
  *  the INPUT_KEYS_STRING will be a string of key characters (i.e. w or W or s or S) since last update packet
  * @param clientID
  * @param message
@@ -89,8 +90,7 @@ void parseStringUpdatePacket(int clientID, string message){
         clientID_username_map.insert(clientID, tokens.at(0));
     }
 
-    
-
+    pong.updateBall()
 
 }
 vector<string> split(string toSplit){
