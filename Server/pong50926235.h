@@ -7,7 +7,9 @@ class Pong{
 public:
 	Pong(unsigned int width, unsigned int height);
 	~Pong();
-	void updateBall(int ballX, int ballY, int ballVelX, int ballVelY);
+	void updateBall(double ballX, double ballY, double ballVelX, double ballVelY);
+	void updatePaddle(double paddleTop);
+	void updateInputs(string inputs);
 	void init();
 	void movePlayer(unsigned int user, unsigned int keyCode, unsigned int latency);
 	bool update();

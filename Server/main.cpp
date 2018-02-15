@@ -89,8 +89,17 @@ void parseStringUpdatePacket(int clientID, string message){
     if(!clientID_username_map.contains(clientID, tokens.at(0))){
         clientID_username_map.insert(clientID, tokens.at(0));
     }
+    double ballXpos = stoi(tokens[1]);
+    double ballYpos = stoi(tokens[2]);
+    double ballXdir = stoi(tokens[3]);
+    double ballYdir = stoi(tokens[4]);
+    double paddleTop = stoi(tokens[5]);
 
-    pong.updateBall()
+    pong.updateBall(ballXpos, ballYpos, ballXdir, ballYdir);
+
+    pong.updatePaddle(paddleTop);
+
+    pong.updateInputs(tokens[6]);
 
 }
 vector<string> split(string toSplit){
