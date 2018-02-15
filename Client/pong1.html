@@ -105,6 +105,7 @@
 	var p4ScoreDisplay = document.getElementById('p4score');
 	var p1Score = 0;
 	var p2Score = 0;
+	var InfoString = "";
 
 	function Score(playerNum) {
 		switch(playerNum){
@@ -208,12 +209,20 @@
 				if (!paddle1Timer) {
 					paddle1Direction = 10;
 					paddle1Timer = setInterval(movePaddle1, 100);
+					InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
+                        		'|' + paddle1Top.toString() + '|S';
+                   			 send('message', InfoString);
+                    			InfoString = "";
 				}
 				break;
 			case 'KeyW':
 				if (!paddle1Timer) {
 					paddle1Direction = -10;
 					paddle1Timer = setInterval(movePaddle1, 100);
+					InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
+                        		'|' + paddle1Top.toString() + '|W';
+                    			send('message', InfoString);
+                    			InfoString = "";
 				}
 				break;
 		}
@@ -230,8 +239,16 @@
 				paddle2Timer = null;
 				break;
 			case 'KeyS':
+				InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
+                        	'|' + paddle1Top.toString() + '|S';
+                    		send('message', InfoString);
+                    		InfoString = "";
 			case 'KeyW':
 				clearInterval(paddle1Timer);
+				InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
+                        	'|' + paddle1Top.toString() + '|W';
+                    		send('message', InfoString);
+                    		InfoString = "";
 				paddle1Timer = null;
 				break;
 		}
