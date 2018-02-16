@@ -7,21 +7,21 @@
 using namespace std;
 
 
-	pong50926235::Pong(unsigned int width, unsigned int height){
-
+	Pong::Pong(){
+		gameBall = new ball(0,0,0,0);
 	}
-	void pong50926235::updateBall(double ballX, double ballY, double ballVelX, double ballVelY){
-		this.gameBall.x = ballX;
-		this.gameBall.y = ballY;
-		this.gameBall.v.x = ballVelX;
-		this.gameBall.v.y = ballVelY;
+	void Pong::updateBall(double ballX, double ballY, double ballVelX, double ballVelY){
+		gameBall->x = ballX;
+		gameBall->y = ballY;
+		gameBall->v.x = ballVelX;
+		gameBall->v.y = ballVelY;
 	}
 
 
-	void pong50926235::updatePaddle(double paddleTop){}
-	void pong50926235::updateInputs(string inputs){}
-	void pong50926235::init(){}
-	string pong50926235::getGameState(){}
-	void  pong50926235::movePlayer(unsigned int user, unsigned int keyCode, unsigned int latency){}
-	bool pong50926235::update(){}
-	ostringstream pong50926235::getData(){}
+	void Pong::updatePaddle(double paddleTop){}
+	void Pong::updateInputs(string inputs){}
+	void Pong::init(){}
+	string Pong::getGameState(){}
+	void  Pong::movePlayer(unsigned int user, unsigned int keyCode, unsigned int latency){}
+	bool Pong::update(){}
+

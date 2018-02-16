@@ -6,6 +6,7 @@ using namespace std;
 
 class Pong{
 public:
+	Pong();
 	Pong(unsigned int width, unsigned int height);
 	~Pong();
 	void updateBall(double ballX, double ballY, double ballVelX, double ballVelY);
@@ -56,7 +57,7 @@ private:
 
 	unsigned int width;
 	unsigned int height;
-	ball gameBall;
+	ball * gameBall;
 	paddle player1left;
 	paddle player2right;
 	paddle player3top;
