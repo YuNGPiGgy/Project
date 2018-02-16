@@ -1,6 +1,7 @@
 #ifndef PONG_H
 #define PONG_H
 #include <string>
+#include "websocket.h"
 using namespace std;
 
 class Pong{
@@ -28,12 +29,12 @@ private:
 
 	struct ball{
         ball(double x, double y, double velX, double velY, double speed=2, double radius=20){
-            this.x = x;
-            this.y = y;
-            this.v.x = velX;
-            this.v.y = velY;
-            this.speed = speed;
-            this.radius = radius;
+            this->x = x;
+            this->y = y;
+            this->v.x = velX;
+            this->v.y = velY;
+            this->speed = speed;
+            this->radius = radius;
         }
 		double x;
 		double y;

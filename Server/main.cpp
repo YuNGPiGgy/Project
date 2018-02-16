@@ -12,7 +12,10 @@ using namespace std;
 
 webSocket server;
 map<int, string> clientID_username_map;
-Pong pong;
+Pong pong(600, 800);
+
+void parseStringUpdatePacket(int clientID, string message);
+vector<string> split(string toSplit);
 
 
 /* called when a client connects */
@@ -21,9 +24,8 @@ void openHandler(int clientID){
     os << "Stranger " << clientID << " has joined.";
 
     vector<int> clientIDs = server.getClientIDs();
-	int channelNum = server.getClientPort(clientID);
     for (int i = 0; i < clientIDs.size(); i++){
-        if (clientIDs[i] != clientID && server.getClientPort(clientIDs[i]) == channelNum)
+        if (clientIDs[i] != clientID)
             server.wsSend(clientIDs[i], os.str());
     }
     server.wsSend(clientID, "Welcome!");
@@ -36,9 +38,8 @@ void closeHandler(int clientID){
     os << "Stranger " << clientID << " has left.";
 
     vector<int> clientIDs = server.getClientIDs();
-	int channelNum = server.getClientPort(clientID);
     for (int i = 0; i < clientIDs.size(); i++){
-        if (clientIDs[i] != clientID && server.getClientPort(clientIDs[i]) == channelNum)
+        if (clientIDs[i] != clientID )
             server.wsSend(clientIDs[i], os.str());
     }
 }
@@ -82,8 +83,8 @@ void periodicHandler(){
  ***********************************************************************/
 void parseStringUpdatePacket(int clientID, string message){
     vector<string> tokens = split(message);
-    if(!clientID_username_map.contains(clientID, tokens.at(0))){
-        clientID_username_map.insert(clientID, tokens.at(0));
+    if(!clientID_username_map.count(clientID)){
+        clientID_username_map.insert(pair<int, string>(clientID, tokens.at(0)));
     }
     double ballXpos = stoi(tokens[1]);
     double ballYpos = stoi(tokens[2]);
@@ -103,7 +104,7 @@ void parseStringUpdatePacket(int clientID, string message){
  * Split string into tokenized vector<string>
  ***********************************************************************/
 vector<string> split(string toSplit){
-    stringstream ss($toSplit);
+    stringstream ss(toSplit);
     string item;
     vector<string> tokens;
     while(getline(ss, item, '|')){
@@ -112,7 +113,8 @@ vector<string> split(string toSplit){
     return tokens;
 }
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[])
+{
 
 	/* set event handler */
 	server.setOpenHandler(openHandler);
@@ -122,9 +124,9 @@ int main(int argc, char *argv[]){
 
 
     /* start the chatroom server, listen to ip '127.0.0.1' and ports '8000'-'8003' */
-	int ports[] = { 8000, 8001, 8002, 8003 };
+//	int ports[] = { 8000, 8001, 8002, 8003 };
 
-	server.startServer(ports);
+	server.startServer(8000);
 
     return 1;
 }
