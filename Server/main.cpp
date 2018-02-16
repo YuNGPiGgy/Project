@@ -46,34 +46,26 @@ void closeHandler(int clientID){
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message){			//check which port the client is in and only send message to that group of clients
     ostringstream os;
-    os << "Stranger " << clientID << " says: " << message;
 
-    vector<int> clientIDs = server.getClientIDs();
-	int channelNum = server.getClientPort(clientID);
-    for (int i = 0; i < clientIDs.size(); i++){
-        if (clientIDs[i] != clientID && server.getClientPort(clientIDs[i]) == channelNum)
-            server.wsSend(clientIDs[i], os.str());
-    }
+    //vector<int> clientIDs = server.getClientIDs();
+	//int channelNum = server.getClientPort(clientID);
+    parseStringUpdatePacket(clientID, message);
 }
 
 /* called once per select() loop */
 void periodicHandler(){
-    static time_t next = time(NULL) + 10;
+    static time_t next = time(NULL) + 5;
     time_t current = time(NULL);
     if (current >= next){
         ostringstream os;
-		//Deprecated ctime API in Windows 10
-		char timecstring[26];
-		ctime_s(timecstring, sizeof(timecstring), &current);
-		string timestring(timecstring);
-        timestring = timestring.substr(0, timestring.size() - 1);
-        os << timestring;
+
+        os << pong.getGameState();
 
         vector<int> clientIDs = server.getClientIDs();
         for (int i = 0; i < clientIDs.size(); i++)
             server.wsSend(clientIDs[i], os.str());
 
-        next = time(NULL) + 10;
+        next = time(NULL) + 5;
     }
 }
 
@@ -81,8 +73,12 @@ void periodicHandler(){
  *  Parses strings in the format :
  *  " username | ballPosX | ballPosY | ballDirX | ballDirY | paddleTop | INPUT_KEYS_STRING"
  *  the INPUT_KEYS_STRING will be a string of key characters (i.e. w or W or s or S) since last update packet
- * @param clientID
- * @param message
+ *
+ *  will send input data to pong object for simulation through methods:
+ *  updateBall(double, double, double, double)
+ *  updatePaddle(double)
+ *  updateInputs(string)
+ *
  ***********************************************************************/
 void parseStringUpdatePacket(int clientID, string message){
     vector<string> tokens = split(message);

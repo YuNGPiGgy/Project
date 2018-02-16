@@ -11,6 +11,7 @@ public:
 	void updatePaddle(double paddleTop);
 	void updateInputs(string inputs);
 	void init();
+	string getGameState();
 	void movePlayer(unsigned int user, unsigned int keyCode, unsigned int latency);
 	bool update();
 	ostringstream getData();
