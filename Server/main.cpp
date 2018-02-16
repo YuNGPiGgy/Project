@@ -98,6 +98,10 @@ void parseStringUpdatePacket(int clientID, string message){
     pong.updateInputs(tokens[6]);
 
 }
+
+/***********************************************************************
+ * Split string into tokenized vector<string>
+ ***********************************************************************/
 vector<string> split(string toSplit){
     stringstream ss($toSplit);
     string item;
@@ -114,6 +118,8 @@ int main(int argc, char *argv[]){
 	server.setOpenHandler(openHandler);
 	server.setCloseHandler(closeHandler);
 	server.setMessageHandler(messageHandler);
+    server.setPeriodicHandler(periodicHandler);
+
 
     /* start the chatroom server, listen to ip '127.0.0.1' and ports '8000'-'8003' */
 	int ports[] = { 8000, 8001, 8002, 8003 };

@@ -19,10 +19,22 @@ public:
 private:
 	bool Intersect(double ax, double ay, double aw, double ah, double bx, double by, double bw, double bh);
 
-	unsigned int width;
-	unsigned int height;
+    struct paddle{
+        double top;
+        double left;
+        double height;
+        double width;
+    };
 
 	struct ball{
+        ball(double x, double y, double velX, double velY, double speed=2, double radius=20){
+            this.x = x;
+            this.y = y;
+            this.v.x = velX;
+            this.v.y = velY;
+            this.speed = speed;
+            this.radius = radius;
+        }
 		double x;
 		double y;
 		struct velocity{
@@ -41,11 +53,13 @@ private:
 		unsigned int p4 = 0;
 	};
 
-	player p1;
-	player p2;
-	player p3;
-	player p4;
-	ball b;
-	score s;
+	unsigned int width;
+	unsigned int height;
+	ball gameBall;
+	paddle player1left;
+	paddle player2right;
+	paddle player3top;
+	paddle player4bottom;
+score score;
 };
 #endif
