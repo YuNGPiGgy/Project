@@ -8,8 +8,11 @@ using namespace std;
 
 
 	Pong::Pong(){
-		gameBall = new ball(0,0,0,0);
 	}
+	Pong::Pong(unsigned int width, unsigned int height) {
+	}
+	Pong::~Pong(){}
+
 	void Pong::updateBall(double ballX, double ballY, double ballVelX, double ballVelY){
 		gameBall->x = ballX;
 		gameBall->y = ballY;
@@ -21,7 +24,7 @@ using namespace std;
 	void Pong::updatePaddle(double paddleTop){}
 	void Pong::updateInputs(string inputs){}
 	void Pong::init(){}
-	string Pong::getGameState(){}
+	string Pong::getGameState() { return " "; }
 	void  Pong::movePlayer(unsigned int user, unsigned int keyCode, unsigned int latency){}
-	bool Pong::update(){}
+	bool Pong::update() { return false; }
 
