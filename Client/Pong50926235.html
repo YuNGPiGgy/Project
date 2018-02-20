@@ -32,6 +32,7 @@
         }
     </style>
 
+
 </head>
 <body bgcolor="#000000" align="center">
 
@@ -48,11 +49,22 @@
 
 </body>
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-	<script src="fancywebsocket.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="fancywebsocket.js"></script>
+
+<canvas id="Canvas" width="800" height="800"></canvas>
 
 <script>
     var Server;
+    var canvas = document.getElementById("Canvas");
+    var ctx = canvas.getContext("2d");
+
+    // Red rectangle
+    ctx.beginPath();
+    ctx.lineWidth = "6";
+    ctx.strokeStyle = "red";
+    ctx.rect(0, 0, 800, 800);
+    ctx.stroke();
 
     function send(text) {
         Server.send('message', text);
