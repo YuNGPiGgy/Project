@@ -48,31 +48,21 @@
 
 </body>
 
-<script src="https://ajax.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="fancywebsocket.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script src="fancywebsocket.js"></script>
 
 <script>
     var Server;
-
-    function log(text) {
-        $log = $('#log');
-        //Add text to log
-        $log.append(($log.val() ? "\n" : '') + text);
-        //Autoscroll
-        $log[0].scrollTop = $log[0].scrollHeight - $log[0].clientHeight;
-    }
 
     function send(text) {
         Server.send('message', text);
     }
 
     function connect() {
-        log('Connecting...');
         Server = new FancyWebSocket('ws://' + document.getElementById('ip').value + ':' + document.getElementById('port').value);
 
         $('#message').keypress(function (e) {
             if (e.keyCode == 13 && this.value) {
-                log('You: ' + this.value);
                 send(this.value);
 
                 $(this).val('');
@@ -81,19 +71,16 @@
 
         //Let the user know we're connected
         Server.bind('open', function () {
-            document.getElementById("cntBtn").disabled = true;
-            log("Connected.");
+            document.getElementById("connectButton").disabled = true;
         });
 
         //Disconnection occurred.
         Server.bind('close', function (data) {
-            document.getElementById("cntBtn").disabled = false;
-            log("Disconnected.");
+            document.getElementById("connectButton").disabled = false;
         });
 
         //Log any messages sent from server
         Server.bind('message', function (payload) {
-            log(payload);
         });
 
         Server.connect();
