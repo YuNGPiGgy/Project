@@ -15,7 +15,6 @@ public:
 	void updateInputs(PLAYER player, string inputs);
 	void init();
 	string getGameState();
-	void movePlayer(PLAYER player, unsigned int keyCode, unsigned int latency);
 	bool update();
 	void playerScore(PLAYER player);
 	ostringstream getData();
@@ -23,7 +22,6 @@ public:
 
 private:
 	bool Intersect(double ax, double ay, double aw, double ah, double bx, double by, double bw, double bh); //check intersect of any two objects
-	bool Intersect(PLAYER player); //check intersect of player paddle and ball
 
     struct paddle{
         int top;

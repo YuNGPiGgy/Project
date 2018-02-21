@@ -160,10 +160,13 @@ using namespace std;
 		return returnString; 
 	}
 
-	void  Pong::movePlayer(PLAYER player, unsigned int keyCode, unsigned int latency){}
-
 	bool Pong::update() { return false; }
 
-	bool Pong::Intersect(double ax, double ay, double aw, double ah, double bx, double by, double bw, double bh) { return false; }
-	bool Pong::Intersect(PLAYER player) { return false; }
+	bool Pong::Intersect(double ax, double ay, double aw, double ah, double bx, double by, double bw, double bh) {
+		return (bx < ax + aw && by - bh < ay && by > ay - ah) ||		//intersection on left 
+					(bx + bw > ax && by - bh < ay && by > ay - ah) ||	//intersection on right
+					(by > ay - ah && bx + bw > ax && bx < ax + aw) ||  //intersection at top
+					(by - bh < ay && bx + bw > ax && bx < ax + aw);		//intersection at bottom
+	}
+
 
