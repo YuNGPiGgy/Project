@@ -80,3 +80,6 @@ using namespace std;
 
 	bool Pong::update() { return false; }
 
+	bool Pong::Intersect(double ax, double ay, double aw, double ah, double bx, double by, double bw, double bh) { return false; }
+	bool Pong::Intersect(PLAYER player) { return false; }
+

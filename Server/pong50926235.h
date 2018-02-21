@@ -41,7 +41,7 @@ private:
 			this->radius = 20;
 			this->owner = p1;
 		}
-        ball(double x, double y, double velX, double velY, double speed=2, double radius=20, PLAYER owner){
+        ball(double x, double y, double velX, double velY, PLAYER owner, double speed=2, double radius=20){
             this->x = x;
             this->y = y;
             this->v.x = velX;
