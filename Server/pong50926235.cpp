@@ -39,25 +39,25 @@ using namespace std;
 
 		//Check if the ball has hit a goal
 		if (gameBall.x <  gameBall.radius) {
-			if (Intersect(p1))
+			if (Intersect(player1left, gameBall))
 				gameBall.owner = p1;
 			else
 				playerScore(gameBall.owner);
 		}
 		else if (gameBall.x + gameBall.radius > gameBoard.width - gameBall.radius ) {
-			if (Intersect(p2))
+			if (Intersect(player2right, gameBall))
 				gameBall.owner = p2;
 			else
 				playerScore(gameBall.owner);
 		}
 		else if (gameBall.y < gameBall.radius ) {
-			if (Intersect(p4))
+			if (Intersect(player4bottom, gameBall))
 				gameBall.owner = p4;
 			else
 				playerScore(gameBall.owner);
 		}
-		else if (gameBall.y + gameBall.radius > gameBoard.height - gameBall.radius && !Intersect(p3)) {
-			if (Intersect(p3))
+		else if (gameBall.y + gameBall.radius > gameBoard.height - gameBall.radius) {
+			if (Intersect(player3top, gameBall))
 				gameBall.owner = p3;
 			else
 				playerScore(gameBall.owner);
@@ -162,11 +162,12 @@ using namespace std;
 
 	bool Pong::update() { return false; }
 
-	bool Pong::Intersect(double ax, double ay, double aw, double ah, double bx, double by, double bw, double bh) {
-		return (bx < ax + aw && by - bh < ay && by > ay - ah) ||		//intersection on left 
-					(bx + bw > ax && by - bh < ay && by > ay - ah) ||	//intersection on right
-					(by > ay - ah && bx + bw > ax && bx < ax + aw) ||  //intersection at top
-					(by - bh < ay && bx + bw > ax && bx < ax + aw);		//intersection at bottom
+	
+	bool Pong::Intersect(paddle paddle, ball ball) {
+		return (ball.x < paddle.left + paddle.width && ball.y - ball.radius < paddle.top && ball.y > paddle.top - paddle.height) ||		//intersection on left 
+					(ball.x + ball.radius > paddle.left && ball.y - ball.radius < paddle.top && ball.y > paddle.top - paddle.height) ||	//intersection on right
+					(ball.y > paddle.top - paddle.height && ball.x + ball.radius > paddle.left && ball.x < paddle.left + paddle.width) ||  //intersection at top
+					(ball.y - ball.radius < paddle.top && ball.x + ball.radius > paddle.left && ball.x < paddle.left + paddle.width);		//intersection at bottom
 	}
 
 

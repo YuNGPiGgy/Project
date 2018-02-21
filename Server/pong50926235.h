@@ -21,7 +21,6 @@ public:
 	float randomDirection(float Min, float Max);
 
 private:
-	bool Intersect(double ax, double ay, double aw, double ah, double bx, double by, double bw, double bh); //check intersect of any two objects
 
     struct paddle{
         int top;
@@ -73,6 +72,8 @@ private:
 		unsigned int height;
 	};
 
+
+	bool Intersect(paddle paddle, ball ball); //check intersect of any two objects
 	unsigned int width;
 	unsigned int height;
 	ball gameBall;
