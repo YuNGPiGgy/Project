@@ -7,6 +7,7 @@
 #include <windows.h>
 #include <process.h>
 #include "pong50926235.h"
+#define INTERVAL_MS 10
 
 using namespace std;
 
@@ -54,9 +55,11 @@ void messageHandler(int clientID, string message){			//check which port the clie
 }
 
 /* called once per select() loop */
+int interval_clocks = CLOCKS_PER_SEC * INTERVAL_MS / 1000;
+
 void periodicHandler(){
-    static time_t next = time(NULL) + 5;
-    time_t current = time(NULL);
+    static clock_t next = clock() + interval_clocks;
+    clock_t current = clock();
     if (current >= next){
         ostringstream os;
 

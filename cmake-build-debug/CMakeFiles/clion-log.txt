@@ -1,0 +1,2 @@
+CMakeLists.txt not found in C:\Users\yungc\Desktop\I&C SCI 167 Assignment 3\Project
+Toolchains are not configured Configure
