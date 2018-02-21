@@ -112,7 +112,12 @@
 	var p1Score = 0;
 	var p2Score = 0;
 	var playerNum = 0;
-	var InfoString = "";
+    var InfoString = "";
+    var move_start = setInterval(moveBall, 25);
+    var speed_ramp = setInterval(function () {
+        if (ballXDir < 50) ballXDir *= 1.1;
+        if (ballYDir < 50) ballYDir *= 1.1;
+    }, 10000)
 
 	function Score(playerNum) {
 		switch(playerNum){
@@ -120,8 +125,10 @@
 			break;
 		case '2': p2Score += 1;
 			break;
-		case '3': break;
-		case '4': break;		
+        case '3': p3Score += 1;
+            break;
+        case '4': p4Score += 1;
+            break;
 		}
 
 		p1ScoreDisplay.innerHTML = p1Score;
@@ -190,12 +197,23 @@
 	}
 
 	//Set timing intervals for speed and update (once networking is implemented)
-	setInterval(moveBall, 25);
-	setInterval(function() {
-		if (ballXDir < 50) ballXDir *= 1.1;
-		if (ballYDir < 50) ballYDir *= 1.1;
-	}, 10000)
+    function StartGame() {
+        move_start;
+        speed_ramp;
+    }
 
+    function StopGame() {
+        clearInterval(move_start);
+        clearInterval(speed_ramp);
+        ballXPos = 50;
+        ballYPos = 50;
+        ballXDir = 5;
+        ballYDir = 5;
+        p1Score = 0;
+        p2Score = 0;
+        p3Score = 0;
+        p4Score = 0;
+    }
 	//Get keyboard inputs KEYDOWN
 	//this uses the interval to only take a key input ever certain number of frames
 	document.addEventListener('keydown', function(evt) {
