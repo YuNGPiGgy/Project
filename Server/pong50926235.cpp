@@ -3,6 +3,7 @@
 //
 
 #include "pong50926235.h"
+#include <math.h>
 #include <string>
 using namespace std;
 
@@ -16,12 +17,56 @@ using namespace std;
 	Pong::~Pong(){}
 
 	void Pong::updateBall(double ballX, double ballY, double ballVelX, double ballVelY){
-		gameBall.x = ballX;
-		gameBall.y = ballY;
-		gameBall.v.x = ballVelX;
-		gameBall.v.y = ballVelY;
+		double newBallXPos = ballX;
+		double newBallYPos = ballY;
+		double newBallVelX = ballVelX;
+		double newBallVelY = ballVelY;
+
+		if (newBallXPos + gameBall.radius > gameBoard.width) {
+			gameBall.v.x = -abs(gameBall.v.x);
+		}
+		if (newBallYPos + gameBall.radius > gameBoard.height) {
+			gameBall.v.y = -abs(gameBall.v.y);
+		}
+		if (newBallXPos < 0) {
+			gameBall.v.x = abs(gameBall.v.x);
+		}
+		if (newBallYPos < 0) {
+			gameBall.v.y = abs(gameBall.v.y);
+		}
+		gameBall.x += gameBall.v.x;
+		gameBall.y += gameBall.v.y;
+
+		//Check if the ball has hit a goal
+		if (gameBall.x <  gameBall.radius) {
+			if (Intersect(p1))
+				gameBall.owner = p1;
+			else
+				playerScore(gameBall.owner);
+		}
+		else if (gameBall.x + gameBall.radius > gameBoard.width - gameBall.radius ) {
+			if (Intersect(p2))
+				gameBall.owner = p2;
+			else
+				playerScore(gameBall.owner);
+		}
+		else if (gameBall.y < gameBall.radius ) {
+			if (Intersect(p4))
+				gameBall.owner = p4;
+			else
+				playerScore(gameBall.owner);
+		}
+		else if (gameBall.y + gameBall.radius > gameBoard.height - gameBall.radius && !Intersect(p3)) {
+			if (Intersect(p3))
+				gameBall.owner = p3;
+			else
+				playerScore(gameBall.owner);
+		}
 	}
 
+	void Pong::playerScore(PLAYER player) {
+
+	}
 
 	void Pong::updatePaddle(PLAYER player, double paddleTop){}
 

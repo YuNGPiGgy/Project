@@ -17,10 +17,12 @@ public:
 	string getGameState();
 	void movePlayer(PLAYER player, unsigned int keyCode, unsigned int latency);
 	bool update();
+	void playerScore(PLAYER player);
 	ostringstream getData();
 
 private:
-	bool Intersect(double ax, double ay, double aw, double ah, double bx, double by, double bw, double bh);
+	bool Intersect(double ax, double ay, double aw, double ah, double bx, double by, double bw, double bh); //check intersect of any two objects
+	bool Intersect(PLAYER player); //check intersect of player paddle and ball
 
     struct paddle{
         double top;
@@ -37,14 +39,16 @@ private:
 			this->v.y = 2;
 			this->speed = 2;
 			this->radius = 20;
+			this->owner = p1;
 		}
-        ball(double x, double y, double velX, double velY, double speed=2, double radius=20){
+        ball(double x, double y, double velX, double velY, double speed=2, double radius=20, PLAYER owner){
             this->x = x;
             this->y = y;
             this->v.x = velX;
             this->v.y = velY;
             this->speed = speed;
             this->radius = radius;
+			this->owner = owner;
         }
 		double x;
 		double y;
@@ -55,6 +59,7 @@ private:
 		velocity v;
 		double speed = 2;
 		double radius = 20;
+		PLAYER owner;
 	};
 
 	struct score{
