@@ -6,15 +6,16 @@ using namespace std;
 
 class Pong{
 public:
+	enum PLAYER{ p1, p2, p3, p4 };
 	Pong();
 	Pong(unsigned int width, unsigned int height);
 	~Pong();
 	void updateBall(double ballX, double ballY, double ballVelX, double ballVelY);
-	void updatePaddle(double paddleTop);
-	void updateInputs(string inputs);
+	void updatePaddle(PLAYER player, double paddleTop);
+	void updateInputs(PLAYER player, string inputs);
 	void init();
 	string getGameState();
-	void movePlayer(unsigned int user, unsigned int keyCode, unsigned int latency);
+	void movePlayer(PLAYER player, unsigned int keyCode, unsigned int latency);
 	bool update();
 	ostringstream getData();
 
@@ -29,6 +30,14 @@ private:
     };
 
 	struct ball{
+		ball() {
+			this->x = 0;
+			this->y = 0;
+			this->v.x = 2;
+			this->v.y = 2;
+			this->speed = 2;
+			this->radius = 20;
+		}
         ball(double x, double y, double velX, double velY, double speed=2, double radius=20){
             this->x = x;
             this->y = y;
@@ -55,13 +64,19 @@ private:
 		unsigned int p4 = 0;
 	};
 
+	struct board {
+		unsigned int width;
+		unsigned int height;
+	};
+
 	unsigned int width;
 	unsigned int height;
-	ball * gameBall;
+	ball gameBall;
 	paddle player1left;
 	paddle player2right;
 	paddle player3top;
 	paddle player4bottom;
+	board gameBoard;
 score score;
 };
 #endif

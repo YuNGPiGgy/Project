@@ -86,6 +86,7 @@ void parseStringUpdatePacket(int clientID, string message){
     if(!clientID_username_map.count(clientID)){
         clientID_username_map.insert(pair<int, string>(clientID, tokens.at(0)));
     }
+
     double ballXpos = stoi(tokens[1]);
     double ballYpos = stoi(tokens[2]);
     double ballXdir = stoi(tokens[3]);
@@ -97,7 +98,6 @@ void parseStringUpdatePacket(int clientID, string message){
     pong.updatePaddle(paddleTop);
 
     pong.updateInputs(tokens[6]);
-
 }
 
 /***********************************************************************

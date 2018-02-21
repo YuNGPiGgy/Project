@@ -65,195 +65,215 @@
 	</style>
 </head>
 <body>
-	<div class="paddleA" id="p1paddle"></div>
-	<div class="paddleA" id="p2paddle"></div>
-	<div class="paddleB" id="p3paddle"></div>
-	<div class="paddleB" id="p4paddle"></div>
-	<div class="ball" id="ball"></div>
+    <div class="paddleA" id="p1paddle"></div>
+    <div class="paddleA" id="p2paddle"></div>
+    <div class="paddleB" id="p3paddle"></div>
+    <div class="paddleB" id="p4paddle"></div>
+    <div class="ball" id="ball"></div>
 
-	<h1 class="scoreA" id="p1score">0</h1>
-	<h1 class="scoreB" id="p2score">0</h1>
-	<h1 class="scoreB" id="p3score">0</h1>
-	<h1 class="scoreA" id="p4score">0</h1>
+    <h1 class="scoreA" id="p1score">0</h1>
+    <h1 class="scoreB" id="p2score">0</h1>
+    <h1 class="scoreB" id="p3score">0</h1>
+    <h1 class="scoreA" id="p4score">0</h1>
 
-	<script>
-	'use strict';
-	var paddle1 = document.getElementById('p1paddle');
-	var paddle2 = document.getElementById('p2paddle');
-	var paddle3 = document.getElementById('p1paddle');
-	var paddle4 = document.getElementById('p2paddle');
-	var ball = document.getElementById('ball');
-	var paddle1Top = 0;
-	var paddle2Top = 0;
-	var paddle1Height = 200;
-	var paddle2Height = 200;
-	var paddle2Direction = 0;
-	var paddle2Timer;
-	var paddle1Direction = 0;
-	var paddle1Timer;
-	paddle1.style.top = 0;
-	paddle2.style.top = 0;
-	var ballXPos = 50;
-	var ballYPos = 50;
-	var ballXDir = 5;
-	var ballYDir = 5;
-	var ballWidth = 20;
-	var ballHeight = 20;
-	var p1ScoreDisplay = document.getElementById('p1score');
-	var p2ScoreDisplay = document.getElementById('p2score');
-	var p3ScoreDisplay = document.getElementById('p3score');
-	var p4ScoreDisplay = document.getElementById('p4score');
-	var p1Score = 0;
-	var p2Score = 0;
-	var InfoString = "";
+    <canvas id="game" width="800" height="800"></canvas>
+    <script>
+        'use strict';
+        var paddle1 = document.getElementById('p1paddle');
+        var paddle2 = document.getElementById('p2paddle');
+        var paddle3 = document.getElementById('p1paddle');
+        var paddle4 = document.getElementById('p2paddle');
+        var ball = document.getElementById('ball');
+        var canvas = document.getElementById('game');
+        var paddle1Top = 0;
+        var paddle2Top = 0;
+        var paddle1Height = 200;
+        var paddle2Height = 200;
+        var paddle2Direction = 0;
+        var paddle2Timer;
+        var paddle1Direction = 0;
+        var paddle1Timer;
+        paddle1.style.top = 0;
+        paddle2.style.top = 0;
+        var ballXPos = 50;
+        var ballYPos = 50;
+        var ballXDir = 5;
+        var ballYDir = 5;
+        var ballWidth = 20;
+        var ballHeight = 20;
+        var p1ScoreDisplay = document.getElementById('p1score');
+        var p2ScoreDisplay = document.getElementById('p2score');
+        var p3ScoreDisplay = document.getElementById('p3score');
+        var p4ScoreDisplay = document.getElementById('p4score');
+        var p1Score = 0;
+        var p2Score = 0;
+        var p3Score = 0;
+        var p4Score = 0;
+        var InfoString = "";
 
-	function Score(playerNum) {
-		switch(playerNum){
-		case '1': p1Score += 1;
-			break;
-		case '2': p2Score += 1;
-			break;
-		case '3': break;
-		case '4': break;		
-		}
+        function Score(playerNum) {
+            // set ball position
+            ballXPos = canvas.innerWidth / 2;
+            ballYPos = canvas.innerHeight / 2
 
-		p1ScoreDisplay.innerHTML = p1Score;
-		p2ScoreDisplay.innerHTML = p2Score;
-	}
+            switch (playerNum) {
+                case '1': p1Score += 1;
+                    ballYDir = Math.floor(Math.random() * 12 - 6);
+                    ballXDir = 7 - Math.abs(ballYDir);
+                    ballXDir *= -1;
+                    break;
+                case '2': p2Score += 1;
+                    ballYDir = Math.floor(Math.random() * 12 - 6);
+                    ballXDir = 7 - Math.abs(ballYDir);
+                    break;
+                case '3': p3Score += 1;
+                    ballXDir = Math.floor(Math.random() * 12 - 6);
+                    ballYDir = 7 - Math.abs(ballXDir);
+                    ballYDir *= -1;
+                    break;
+                case '4': p4Score += 1;
+                    ballXDir = Math.floor(Math.random() * 12 - 6);
+                    ballYDir = 7 - Math.abs(ballXDir);
+                    break;
+            }
 
-	function moveBall() {
-		//Check against the dimensions of the window limits
-		var newBallXPos = ballXPos + ballXDir;
-		var newBallYPos = ballYPos + ballYDir;
-		if (newBallXPos + ballWidth > window.innerWidth) {
-			ballXDir = -Math.abs(ballXDir);
-		}
-		if (newBallYPos + ballHeight > window.innerHeight) {
-			ballYDir = -Math.abs(ballYDir);
-		}
-		if (newBallXPos < 0) {
-			ballXDir = Math.abs(ballXDir);
-		}
-		if (newBallYPos < 0) {
-			ballYDir = Math.abs(ballYDir);
-		}
-		ballXPos += ballXDir;
-		ballYPos += ballYDir;
-		
-		//Check if the ball has hit a goal
-		if (ballXPos < 20 && !checkBallAgainstPaddle('1')) {
-			Score('2');
-		}
-		if (ballXPos + 20 > window.innerWidth - 20 && !checkBallAgainstPaddle('2')) {
-			Score('1');
-		}
+            p1ScoreDisplay.innerHTML = p1Score;
+            p2ScoreDisplay.innerHTML = p2Score;
+        }
 
-		//Check if the ball has hit a paddle
-       		if (ballXPos + 20 > window.innerWidth - 20 && checkBallAgainstPaddle('2')) {
-            		ball.style.backgroundColor = "blue";
-        	}
-        	if (ballXPos < 20 && checkBallAgainstPaddle('1')){
-             		ball.style.backgroundColor = "green";
-		}
+        function moveBall() {
+            //Check against the dimensions of the window limits
+            var newBallXPos = ballXPos + ballXDir;
+            var newBallYPos = ballYPos + ballYDir;
+            if (newBallXPos + ballWidth > window.innerWidth) {
+                ballXDir = -Math.abs(ballXDir);
+            }
+            if (newBallYPos + ballHeight > window.innerHeight) {
+                ballYDir = -Math.abs(ballYDir);
+            }
+            if (newBallXPos < 0) {
+                ballXDir = Math.abs(ballXDir);
+            }
+            if (newBallYPos < 0) {
+                ballYDir = Math.abs(ballYDir);
+            }
+            ballXPos += ballXDir;
+            ballYPos += ballYDir;
 
-		ball.style.top = ballYPos + 'px';
-		ball.style.left = ballXPos + 'px';
-	}
-	function movePaddle2() {
-		paddle2Top += paddle2Direction;
-		paddle2.style.top = paddle2Top + 'px';
-	}
-	function movePaddle1() {
-		paddle1Top += paddle1Direction;
-		paddle1.style.top = paddle1Top + 'px';
-	}
-	function checkBallAgainstPaddle(paddle){
-		var toReturn = false;
-		switch(paddle){
-			case '1': toReturn = (ballYPos + 20 > paddle1Top && ballYPos < paddle1Top + paddle1Height);
-			break;
-			case '2': toReturn = (ballYPos + 20 > paddle2Top && ballYPos < paddle2Top + paddle2Height);
-			break;
-			case '3': toReturn = (ballXPos > paddle3Left && ballXPos < paddle3Left + paddle3Width);
-			break;
-			case '4': toReturn = (ballXPos > paddle4Left && ballXPos < paddle4Left + paddle4Width);
-			break;
-		}
-		return toReturn; 
-	}
+            //Check if the ball has hit a goal
+            if (ballXPos < 20 && !checkBallAgainstPaddle('1')) {
+                Score('2');
+            }
+            if (ballXPos + 20 > window.innerWidth - 20 && !checkBallAgainstPaddle('2')) {
+                Score('1');
+            }
 
-	//Set timing intervals for speed and update (once networking is implemented)
-	setInterval(moveBall, 25);
-	setInterval(function() {
-		if (ballXDir < 50) ballXDir *= 1.1;
-		if (ballYDir < 50) ballYDir *= 1.1;
-	}, 10000)
+            //Check if the ball has hit a paddle
+            if (ballXPos + 20 > window.innerWidth - 20 && checkBallAgainstPaddle('2')) {
+                ball.style.backgroundColor = "blue";
+            }
+            if (ballXPos < 20 && checkBallAgainstPaddle('1')) {
+                ball.style.backgroundColor = "green";
+            }
 
-	//Get keyboard inputs KEYDOWN
-	//this uses the interval to only take a key input ever certain number of frames
-	document.addEventListener('keydown', function(evt) {
-		switch (evt.code) {
-			case 'ArrowDown':
-				if (!paddle2Timer) {
-					paddle2Direction = 10;
-					paddle2Timer = setInterval(movePaddle2, 100);
-				}
-				break;
-			case 'ArrowUp':
-				if (!paddle2Timer) {
-					paddle2Direction = -10;
-					paddle2Timer = setInterval(movePaddle2, 100);
-				}
-				break;
-			case 'KeyS':
-				if (!paddle1Timer) {
-					paddle1Direction = 10;
-					paddle1Timer = setInterval(movePaddle1, 100);
-					InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
-                        		'|' + paddle1Top.toString() + '|S';
-                   			 send('message', InfoString);
-                    			InfoString = "";
-				}
-				break;
-			case 'KeyW':
-				if (!paddle1Timer) {
-					paddle1Direction = -10;
-					paddle1Timer = setInterval(movePaddle1, 100);
-					InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
-                        		'|' + paddle1Top.toString() + '|W';
-                    			send('message', InfoString);
-                    			InfoString = "";
-				}
-				break;
-		}
-		console.log(evt);
-	})
+            ball.style.top = ballYPos + 'px';
+            ball.style.left = ballXPos + 'px';
+        }
+        function movePaddle2() {
+            paddle2Top += paddle2Direction;
+            paddle2.style.top = paddle2Top + 'px';
+        }
+        function movePaddle1() {
+            paddle1Top += paddle1Direction;
+            paddle1.style.top = paddle1Top + 'px';
+        }
+        function checkBallAgainstPaddle(paddle) {
+            var toReturn = false;
+            switch (paddle) {
+                case '1': toReturn = (ballYPos + 20 > paddle1Top && ballYPos < paddle1Top + paddle1Height);
+                    break;
+                case '2': toReturn = (ballYPos + 20 > paddle2Top && ballYPos < paddle2Top + paddle2Height);
+                    break;
+                case '3': toReturn = (ballXPos > paddle3Left && ballXPos < paddle3Left + paddle3Width);
+                    break;
+                case '4': toReturn = (ballXPos > paddle4Left && ballXPos < paddle4Left + paddle4Width);
+                    break;
+            }
+            return toReturn;
+        }
 
-	//Get keyboard inputs KEYUP 
-	//this is to end the interval of holding the button down and stop the motion of the paddle
-	document.addEventListener('keyup', function(evt) {
-		switch (evt.code) {
-			case 'ArrowDown':
-			case 'ArrowUp':
-				clearInterval(paddle2Timer);
-				paddle2Timer = null;
-				break;
-			case 'KeyS':
-				InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
-                        	'|' + paddle1Top.toString() + '|S';
-                    		send('message', InfoString);
-                    		InfoString = "";
-			case 'KeyW':
-				clearInterval(paddle1Timer);
-				InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
-                        	'|' + paddle1Top.toString() + '|W';
-                    		send('message', InfoString);
-                    		InfoString = "";
-				paddle1Timer = null;
-				break;
-		}
-		console.log(evt);
-	})
-	</script>
+        //Set timing intervals for speed and update (once networking is implemented)
+        setInterval(moveBall, 25);
+        setInterval(function () {
+            if (ballXDir < 50) ballXDir *= 1.1;
+            if (ballYDir < 50) ballYDir *= 1.1;
+        }, 10000)
+
+        //Get keyboard inputs KEYDOWN
+        //this uses the interval to only take a key input ever certain number of frames
+        document.addEventListener('keydown', function (evt) {
+            switch (evt.code) {
+                case 'ArrowDown':
+                    if (!paddle2Timer) {
+                        paddle2Direction = 10;
+                        paddle2Timer = setInterval(movePaddle2, 100);
+                    }
+                    break;
+                case 'ArrowUp':
+                    if (!paddle2Timer) {
+                        paddle2Direction = -10;
+                        paddle2Timer = setInterval(movePaddle2, 100);
+                    }
+                    break;
+                case 'KeyS':
+                    if (!paddle1Timer) {
+                        paddle1Direction = 10;
+                        paddle1Timer = setInterval(movePaddle1, 100);
+                        InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
+                            '|' + paddle1Top.toString() + '|S';
+                        send('message', InfoString);
+                        InfoString = "";
+                    }
+                    break;
+                case 'KeyW':
+                    if (!paddle1Timer) {
+                        paddle1Direction = -10;
+                        paddle1Timer = setInterval(movePaddle1, 100);
+                        InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
+                            '|' + paddle1Top.toString() + '|W';
+                        send('message', InfoString);
+                        InfoString = "";
+                    }
+                    break;
+            }
+            console.log(evt);
+        })
+
+        //Get keyboard inputs KEYUP
+        //this is to end the interval of holding the button down and stop the motion of the paddle
+        document.addEventListener('keyup', function (evt) {
+            switch (evt.code) {
+                case 'ArrowDown':
+                case 'ArrowUp':
+                    clearInterval(paddle2Timer);
+                    paddle2Timer = null;
+                    break;
+                case 'KeyS':
+                    InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
+                        '|' + paddle1Top.toString() + '|S';
+                    send('message', InfoString);
+                    InfoString = "";
+                case 'KeyW':
+                    clearInterval(paddle1Timer);
+                    InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
+                        '|' + paddle1Top.toString() + '|W';
+                    send('message', InfoString);
+                    InfoString = "";
+                    paddle1Timer = null;
+                    break;
+            }
+            console.log(evt);
+        })
+    </script>
 </body>
 </html>
