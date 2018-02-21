@@ -11,7 +11,7 @@ public:
 	Pong(unsigned int width, unsigned int height);
 	~Pong();
 	void updateBall(double ballX, double ballY, double ballVelX, double ballVelY);
-	void updatePaddle(PLAYER player, double paddleTop);
+	void updatePaddle(PLAYER player, int paddleMove);
 	void updateInputs(PLAYER player, string inputs);
 	void init();
 	string getGameState();
@@ -19,16 +19,17 @@ public:
 	bool update();
 	void playerScore(PLAYER player);
 	ostringstream getData();
+	float randomDirection(float Min, float Max);
 
 private:
 	bool Intersect(double ax, double ay, double aw, double ah, double bx, double by, double bw, double bh); //check intersect of any two objects
 	bool Intersect(PLAYER player); //check intersect of player paddle and ball
 
     struct paddle{
-        double top;
-        double left;
-        double height;
-        double width;
+        int top;
+        int left;
+        int height;
+        int width;
     };
 
 	struct ball{

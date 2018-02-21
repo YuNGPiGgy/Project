@@ -64,17 +64,101 @@ using namespace std;
 		}
 	}
 
-	void Pong::playerScore(PLAYER player) {
-
+	float Pong::randomDirection(float Min, float Max)
+	{
+		return ((float(rand()) / float(RAND_MAX)) * (Max - Min)) + Min;
 	}
 
-	void Pong::updatePaddle(PLAYER player, double paddleTop){}
+	void Pong::playerScore(PLAYER player) {
+		//reset ball to center screen and choose random direction
+		gameBall.x = this->width / 2;
+		gameBall.y = this->height / 2;
+		gameBall.v.y = randomDirection(gameBall.speed * -1, gameBall.speed);
+		gameBall.v.x = randomDirection(gameBall.speed * -1, gameBall.speed);
 
-	void Pong::updateInputs(PLAYER player, string inputs){}
+		// player scores 
+		switch (player) {
+		case p1: score.p1++;
+			gameBall.owner = p1;
+			break;
+		case p2: score.p2++;
+			gameBall.owner = p2;
+			break;
+		case p3: score.p3++;
+			gameBall.owner = p3;
+			break;
+		case p4: score.p4++;
+			gameBall.owner = p4;
+			break;					
+		}
+	}
+
+	void Pong::updatePaddle(PLAYER player, int paddleMove){
+		switch (player) {
+		case p1: if (paddleMove == 1)
+						this->player1left.top--;
+					else if (paddleMove == 3)
+						this->player1left.top++;
+			break;
+		case p2: if (paddleMove == 1)
+						this->player2right.top--;
+					else if (paddleMove == 3)
+						this->player2right.top++;
+			break;
+		case p3: if (paddleMove == 0)
+						this->player3top.left--;
+					else if (paddleMove == 2)
+						this->player3top.left++;
+			break;
+		case p4: if (paddleMove == 0)
+						this->player4bottom.left--;
+					else if (paddleMove == 2)
+						this->player4bottom.left++;
+			break;
+		}
+	}
+
+	void Pong::updateInputs(PLAYER player, string inputs){
+		int input = -1;
+		for (int i = 0; i < inputs.length(); i++) {
+			switch (inputs.at(i)) {
+			case 'l':
+			case 'L': input = 0; //LEFT
+				break; 
+			case 'u':
+			case 'U': input = 1; //UP
+				break;
+			case 'r':
+			case 'R': input = 2; //RIGHT
+				break;
+			case 'd': 
+			case 'D': input = 3; //DOWN
+				break;
+			default: input = -1;
+			}
+			if (input != -1) {
+				updatePaddle(player, input);
+			}
+		}
+	}
 
 	void Pong::init(){}
 
-	string Pong::getGameState() { return " "; }
+	/***************************************************************
+		Send gamestate as string in format (without spaces):
+		"ballPosX | ballPosY | ballDirX | ballDirY | paddle1top | paddle2top | paddle3left | paddle4left"
+		where:
+		paddle1 is p1(left)
+		paddle2 is p2(right)
+		paddle3 is p3(top)
+		paddle4 is p4(bottom)
+	****************************************************************/
+	string Pong::getGameState() 
+	{ 
+		string returnString = ""; 
+		returnString += gameBall.x + '|' + gameBall.y + '|' + gameBall.v.x + '|' + gameBall.v.y + '|' + player1left.top + '|' + player2right.top + '|' + player3top.left + '|' + player4bottom.left;
+		return returnString; 
+	}
 
 	void  Pong::movePlayer(PLAYER player, unsigned int keyCode, unsigned int latency){}
 

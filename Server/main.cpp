@@ -74,7 +74,7 @@ void periodicHandler(){
 }
 
 /***********************************************************************
- *  Parses strings in the format :
+ *  Parses strings in the format (without spaces):
  *  " username | ballPosX | ballPosY | ballDirX | ballDirY | paddleTop | INPUT_KEYS_STRING"
  *  the INPUT_KEYS_STRING will be a string of key characters (i.e. w or W or s or S) since last update packet
  *
