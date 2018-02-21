@@ -10,18 +10,16 @@ public:
 	Pong();
 	Pong(unsigned int width, unsigned int height);
 	~Pong();
-	void updateBall(double ballX, double ballY, double ballVelX, double ballVelY);
+	void updateBall(int ballX, int ballY, int ballVelX, int ballVelY);
 	void updatePaddle(PLAYER player, int paddleMove);
 	void updateInputs(PLAYER player, string inputs);
 	void init();
 	string getGameState();
-	bool update();
 	void playerScore(PLAYER player);
 	ostringstream getData();
 	float randomDirection(float Min, float Max);
 
 private:
-
     struct paddle{
         int top;
         int left;

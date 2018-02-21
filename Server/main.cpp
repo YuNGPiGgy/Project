@@ -75,7 +75,7 @@ void periodicHandler(){
 
 /***********************************************************************
  *  Parses strings in the format (without spaces):
- *  " username | ballPosX | ballPosY | ballDirX | ballDirY | paddleTop | INPUT_KEYS_STRING"
+ *  " username | ballPosX | ballPosY | ballDirX | ballDirY | paddleTop | paddleLeft | INPUT_KEYS_STRING"
  *  the INPUT_KEYS_STRING will be a string of key characters (i.e. w or W or s or S) since last update packet
  *
  *  will send input data to pong object for simulation through methods:
@@ -91,17 +91,18 @@ void parseStringUpdatePacket(int clientID, string message){
     }
 	Pong::PLAYER player = static_cast<Pong::PLAYER>(stoi(tokens.at(0)));
 
-    double ballXpos = stoi(tokens[1]);
-    double ballYpos = stoi(tokens[2]);
-    double ballXdir = stoi(tokens[3]);
-    double ballYdir = stoi(tokens[4]);
-    double paddleTop = stoi(tokens[5]);
+    int ballXpos = stoi(tokens[1]);
+    int ballYpos = stoi(tokens[2]);
+    int ballXdir = stoi(tokens[3]);
+    int ballYdir = stoi(tokens[4]);
+    int paddleTop = stoi(tokens[5]);
+	int paddleLeft = stoi(tokens[6]);
 
     pong.updateBall(ballXpos, ballYpos, ballXdir, ballYdir);
 
     pong.updatePaddle(player, paddleTop);
 
-    pong.updateInputs(player, tokens[6]);
+    pong.updateInputs(player, tokens[7]);
 }
 
 /***********************************************************************

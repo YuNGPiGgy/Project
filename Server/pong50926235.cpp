@@ -16,7 +16,7 @@ using namespace std;
 	}
 	Pong::~Pong(){}
 
-	void Pong::updateBall(double ballX, double ballY, double ballVelX, double ballVelY){
+	void Pong::updateBall(int ballX, int ballY, int ballVelX, int ballVelY){
 		double newBallXPos = ballX;
 		double newBallYPos = ballY;
 		double newBallVelX = ballVelX;
@@ -159,8 +159,6 @@ using namespace std;
 		returnString += gameBall.x + '|' + gameBall.y + '|' + gameBall.v.x + '|' + gameBall.v.y + '|' + player1left.top + '|' + player2right.top + '|' + player3top.left + '|' + player4bottom.left;
 		return returnString; 
 	}
-
-	bool Pong::update() { return false; }
 
 	
 	bool Pong::Intersect(paddle paddle, ball ball) {
