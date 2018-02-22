@@ -81,6 +81,6 @@ private:
 	paddle player3top;
 	paddle player4bottom;
 	board gameBoard;
-score score;
+	score score;
 };
 #endif
