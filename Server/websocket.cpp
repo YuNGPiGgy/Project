@@ -220,7 +220,6 @@ bool webSocket::wsSendClientMessage(int clientID, unsigned char opcode, string m
         }
 
         // send frame
-
         int left = totalLength;
         char *buf2 = buf;
         do {
@@ -674,7 +673,6 @@ void webSocket::setPeriodicHandler(nullCallback callback){
 }
 
 void webSocket::startServer(int port){
-	players = 0;
     showAvailableIP();
 
     int yes = 1;
@@ -694,8 +692,6 @@ void webSocket::startServer(int port){
 #endif
 
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
-	max_players = 1;
-
     if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(int)) == -1){
         perror("setsockopt() error!");
         exit(1);
@@ -709,11 +705,11 @@ void webSocket::startServer(int port){
         exit(1);
     }
 
-	fdmax = listenfd;
-	fd_set read_fds;
-	FD_ZERO(&fds);
-	FD_SET(listenfd, &fds);
-	FD_ZERO(&read_fds);
+    fdmax = listenfd;
+    fd_set read_fds;
+    FD_ZERO(&fds);
+    FD_SET(listenfd, &fds);
+    FD_ZERO(&read_fds);
 
     struct timeval timeout;
     time_t nextPingTime = time(NULL) + 1;
@@ -724,11 +720,10 @@ void webSocket::startServer(int port){
         if (select(fdmax+1, &read_fds, NULL, NULL, &timeout) > 0){
             for (int i = 0; i <= fdmax; i++){
                 if (FD_ISSET(i, &read_fds)){
-                    if (i == listenfd && players < max_players){
+                    if (i == listenfd){
                         socklen_t addrlen = sizeof(cli_addr);
                         int newfd = accept(listenfd, (struct sockaddr*)&cli_addr, &addrlen);
                         if (newfd != -1){
-							++players;
                             /* add new client */
                             wsAddClient(newfd, cli_addr.sin_addr);
                             //Deprecated ntoa API
@@ -742,10 +737,8 @@ void webSocket::startServer(int port){
                         if (socketIDmap.find(i) != socketIDmap.end()){
                             if (nbytes < 0)
                                 wsSendClientClose(socketIDmap[i], WS_STATUS_PROTOCOL_ERROR);
-							else if (nbytes == 0) {
-								--players;
-								wsRemoveClient(socketIDmap[i]);
-							}
+                            else if (nbytes == 0)
+                                wsRemoveClient(socketIDmap[i]);
                             else {
                                 if (!wsProcessClient(socketIDmap[i], buf, nbytes))
                                     wsSendClientClose(socketIDmap[i], WS_STATUS_PROTOCOL_ERROR);
@@ -781,7 +774,7 @@ void webSocket::stopServer(){
 #ifdef __linux__
     close(listenfd);
 #elif _WIN32
-	closesocket(listenfd);
+    closesocket(listenfd);
 #endif
 
     wsClients.clear();
