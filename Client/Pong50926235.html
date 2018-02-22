@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -84,26 +84,21 @@
         Username: <input type="text" id="username" size=29px><br />
         <button type="button" id="connectButton" onclick="connect();">Connect</button>
     </div>
+	
+	
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="fancywebsocket.js"></script>
+<body src="pong1.html"></body>
 <iframe id ="Canvas" src="pong1.html" height="800px" width="800px" scrolling="no" ></iframe> 
 <br />
 <div id="credit">
-		Created By: Min Woo Choi, Dominic Langmesse, and Yung-Chu Chuang
+		Created By: Min Woo Choi, Dominic Langmesser, and Yung-Chu Chuang
 	</div>
 <script>
     var Server;
     var canvas = document.getElementById("Canvas");
-    var ctx = canvas.getContext("2d");
-
-    // Red rectangle
-    ctx.beginPath();
-    ctx.lineWidth = "6";
-    ctx.strokeStyle = "red";
-    ctx.rect(0, 0, 800, 800);
-    ctx.stroke();
 
     function send(text) {
         Server.send('message', text);
@@ -111,14 +106,6 @@
 
     function connect() {
         Server = new FancyWebSocket('ws://' + document.getElementById('ip').value + ':' + document.getElementById('port').value);
-
-        $('#message').keypress(function (e) {
-            if (e.keyCode == 13 && this.value) {
-                send(this.value);
-
-                $(this).val('');
-            }
-        });
 
         //Let the user know we're connected
         Server.bind('open', function () {
@@ -132,6 +119,7 @@
 
         //Log any messages sent from server
         Server.bind('message', function (payload) {
+            update(payload);
         });
 
         Server.connect();
