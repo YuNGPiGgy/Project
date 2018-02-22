@@ -77,7 +77,7 @@
 	<div class="paddleB" id="p3paddle"></div>
 	<div class="paddleB" id="p4paddle"></div>
 	<div class="ball" id="ball"></div>
-	<h1 class="scoreA" id="p1score">85</h1>
+	<h1 class="scoreA" id="p1score">0</h1>
 	<h1 class="scoreB" id="p2score">0</h1>
 	<h1 class="scoreB" id="p3score">0</h1>
 	<h1 class="scoreA" id="p4score">0</h1>
@@ -101,8 +101,8 @@
 	paddle2.style.top = 0;
 	var ballXPos = 50;
 	var ballYPos = 50;
-	var ballXDir = 5;
-	var ballYDir = 5;
+	var ballXDir = 0;
+	var ballYDir = 0;
 	var ballWidth = 20;
 	var ballHeight = 20;
 	var p1ScoreDisplay = document.getElementById('p1score');
@@ -118,6 +118,24 @@
         if (ballXDir < 50) ballXDir *= 1.1;
         if (ballYDir < 50) ballYDir *= 1.1;
     }, 10000)
+
+    function update(text) {
+        var tokens = str.split(text);
+        ballXPos = tokens[0];
+        ballYPos = tokens[1];
+        ballXDir = tokens[2];
+        ballYDir = tokens[3];
+        paddle1Top = tokens[4];
+        paddle2Top = tokens[5];
+        var paddle3Left = tokens[6];
+        var paddle4Left = tokens[7];
+        style.ball.top = ballYPos + 'px';
+        style.ball.left = ballXPos + 'px';
+        paddle2.style.top = paddle2Top + 'px';
+        paddle1.style.top = paddle1Top + 'px';
+        paddle3.style.left = paddle3Left + 'px';
+        paddle4.style.left = paddle4Left + 'px';
+    }
 
 	function Score(playerNum) {
 		switch(playerNum){
@@ -286,18 +304,18 @@
 			case 'ArrowDown':
 			case 'ArrowUp':
 				clearInterval(paddle2Timer);
-				paddle2Timer = null;
+				
 				break;
-            case 'KeyS':
+            case 'ArrowRight':
                 clearInterval(paddle1Timer);
 				InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
-                        	'|' + paddle1Top.toString() + '|S';
+                        	'|' + paddle1Top.toString() + '|R';
                     		send('message', InfoString);
                     		InfoString = "";
-			case 'KeyW':
+			case 'ArrowLeft':
 				clearInterval(paddle1Timer);
 				InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
-                        	'|' + paddle1Top.toString() + '|W';
+                        	'|' + paddle1Top.toString() + '|L';
                     		send('message', InfoString);
                     		InfoString = "";
 				paddle1Timer = null;
