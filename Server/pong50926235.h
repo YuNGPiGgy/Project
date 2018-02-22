@@ -25,7 +25,6 @@ private:
         int left;
         int height;
         int width;
-		int buttonDownMovement;
     };
 
 	struct ball{
