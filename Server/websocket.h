@@ -65,7 +65,6 @@ public:
         MessageBufferLength = 0;
     }
 
-	int port;                              // client connected port
     int socket;                            // client socket
     string MessageBuffer;                  // a blank string when there's no incoming frames
     int ReadyState;                        // between 0 and 3
@@ -104,9 +103,7 @@ private:
     map<int, int> socketIDmap;
     fd_set fds;
     int fdmax;
-	int listenfd;
-	int players;
-	int max_players;
+    int listenfd;
 
     void wsCheckIdleClients();
     bool wsSendClientMessage(int clientID, unsigned char opcode, string message);
