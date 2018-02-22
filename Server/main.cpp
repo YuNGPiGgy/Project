@@ -61,13 +61,10 @@ void periodicHandler(){
     static clock_t next = clock() + interval_clocks;
     clock_t current = clock();
     if (current >= next){
-        ostringstream os;
-
-        os << pong.getGameState();
 
         vector<int> clientIDs = server.getClientIDs();
         for (int i = 0; i < clientIDs.size(); i++)
-            server.wsSend(clientIDs[i], os.str());
+            server.wsSend(clientIDs[i], pong.getGameState());
 
         next = time(NULL) + 5;
     }
@@ -95,12 +92,10 @@ void parseStringUpdatePacket(int clientID, string message){
     int ballYpos = stoi(tokens[2]);
     int ballXdir = stoi(tokens[3]);
     int ballYdir = stoi(tokens[4]);
-    int paddleTop = stoi(tokens[5]);
+    int paddleTop = stoi(tokens[5]); //will use later < VV 
 	int paddleLeft = stoi(tokens[6]);
 
     pong.updateBall(ballXpos, ballYpos, ballXdir, ballYdir);
-
-    pong.updatePaddle(player, paddleTop);
 
     pong.updateInputs(player, tokens[7]);
 }

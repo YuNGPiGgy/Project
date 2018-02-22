@@ -17,10 +17,10 @@ using namespace std;
 	Pong::~Pong(){}
 
 	void Pong::updateBall(int ballX, int ballY, int ballVelX, int ballVelY){
-		double newBallXPos = ballX;
-		double newBallYPos = ballY;
-		double newBallVelX = ballVelX;
-		double newBallVelY = ballVelY;
+		int newBallXPos = ballX;
+		int newBallYPos = ballY;
+		int newBallVelX = ballVelX;
+		int newBallVelY = ballVelY;
 
 		if (newBallXPos + gameBall.radius > gameBoard.width) {
 			gameBall.v.x = -abs(gameBall.v.x);
@@ -95,48 +95,48 @@ using namespace std;
 
 	void Pong::updatePaddle(PLAYER player, int paddleMove){
 		switch (player) {
-		case p1: if (paddleMove == 1)
+		case p1: if (paddleMove == -1)
 						this->player1left.top--;
-					else if (paddleMove == 3)
+					else if (paddleMove == 1)
 						this->player1left.top++;
 			break;
-		case p2: if (paddleMove == 1)
+		case p2: if (paddleMove == -1)
 						this->player2right.top--;
-					else if (paddleMove == 3)
+					else if (paddleMove == 1)
 						this->player2right.top++;
 			break;
-		case p3: if (paddleMove == 0)
+		case p3: if (paddleMove == -1)
 						this->player3top.left--;
-					else if (paddleMove == 2)
+					else if (paddleMove == 1)
 						this->player3top.left++;
 			break;
-		case p4: if (paddleMove == 0)
+		case p4: if (paddleMove == -1)
 						this->player4bottom.left--;
-					else if (paddleMove == 2)
+					else if (paddleMove == 1)
 						this->player4bottom.left++;
 			break;
 		}
 	}
 
 	void Pong::updateInputs(PLAYER player, string inputs){
-		int input = -1;
+		int input = 0;
 		for (int i = 0; i < inputs.length(); i++) {
 			switch (inputs.at(i)) {
 			case 'l':
-			case 'L': input = 0; //LEFT
+			case 'L': input = -1; //LEFT
 				break; 
 			case 'u':
 			case 'U': input = 1; //UP
 				break;
 			case 'r':
-			case 'R': input = 2; //RIGHT
+			case 'R': input = 1; //RIGHT
 				break;
 			case 'd': 
-			case 'D': input = 3; //DOWN
+			case 'D': input = -1; //DOWN
 				break;
-			default: input = -1;
+			default: input = 0;
 			}
-			if (input != -1) {
+			if (input != 0) {
 				updatePaddle(player, input);
 			}
 		}
@@ -155,6 +155,16 @@ using namespace std;
 	****************************************************************/
 	string Pong::getGameState() 
 	{ 
+		updateBall(gameBall.x, gameBall.y, gameBall.v.x, gameBall.v.y);
+		if (player1left.buttonDownMovement != 0)
+			updatePaddle(p1, player1left.buttonDownMovement);
+		if (player2right.buttonDownMovement != 0)
+			updatePaddle(p2, player2right.buttonDownMovement);
+		if (player3top.buttonDownMovement != 0)
+			updatePaddle(p3, player3top.buttonDownMovement);
+		if (player4bottom.buttonDownMovement != 0)
+			updatePaddle(p4, player4bottom.buttonDownMovement);
+
 		string returnString = ""; 
 		returnString += gameBall.x + '|' + gameBall.y + '|' + gameBall.v.x + '|' + gameBall.v.y + '|' + player1left.top + '|' + player2right.top + '|' + player3top.left + '|' + player4bottom.left;
 		return returnString; 
