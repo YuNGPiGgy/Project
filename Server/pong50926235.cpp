@@ -9,10 +9,12 @@ using namespace std;
 
 
 	Pong::Pong(){
+		init();
 	}
 	Pong::Pong(unsigned int width, unsigned int height) {
 		this->gameBoard.width = width;
 		this->gameBoard.height = height;
+		init();
 	}
 	Pong::~Pong(){}
 
@@ -142,7 +144,39 @@ using namespace std;
 		}
 	}
 
-	void Pong::init(){}
+	void Pong::init(){
+		gameBall.owner = p1;
+		gameBall.x = width / 2;
+		gameBall.y = height / 2;
+		gameBall.v.x = randomDirection(-2, 2);
+		gameBall.v.y = randomDirection(-2, 2);
+		player1left.top = 0;
+		player1left.left = 0;
+		player1left.height = 200;
+		player1left.width = 10;
+		player2right.top = 0;
+		player2right.left = width - 10;
+		player2right.height = 200;
+		player2right.width = 10;
+		player3top.top = 0;
+		player3top.left = 0;
+		player3top.height = 10;
+		player3top.width = 200;
+		player4bottom.top = height - 10;
+		player4bottom.left = 0;
+		player4bottom.height = 10;
+		player4bottom.width = 200;
+		score.p1 = 0;
+		score.p2 = 0;
+		score.p3 = 0;
+		score.p4 = 0;
+	}
+
+	void Pong::pause() {
+		init();
+		gameBall.v.x = 0;
+		gameBall.v.y = 0;
+	}
 
 	/***************************************************************
 		Send gamestate as string in format (without spaces):

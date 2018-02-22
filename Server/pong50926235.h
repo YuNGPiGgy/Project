@@ -18,6 +18,7 @@ public:
 	void playerScore(PLAYER player);
 	ostringstream getData();
 	float randomDirection(float Min, float Max);
+	void pause();
 
 private:
     struct paddle{
@@ -25,6 +26,7 @@ private:
         int left;
         int height;
         int width;
+		int buttonDownMovement;
     };
 
 	struct ball{

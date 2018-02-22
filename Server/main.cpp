@@ -14,6 +14,7 @@ using namespace std;
 webSocket server;
 map<int, string> clientID_username_map;
 Pong pong(600, 800);
+int playerCount = 0;
 
 void parseStringUpdatePacket(int clientID, string message);
 vector<string> split(string toSplit);
@@ -21,33 +22,25 @@ vector<string> split(string toSplit);
 
 /* called when a client connects */
 void openHandler(int clientID){
-    ostringstream os;
-    os << "Stranger " << clientID << " has joined.";
 
-    vector<int> clientIDs = server.getClientIDs();
-    for (int i = 0; i < clientIDs.size(); i++){
-        if (clientIDs[i] != clientID)
-            server.wsSend(clientIDs[i], os.str());
-    }
-    server.wsSend(clientID, "Welcome!");
+    server.wsSend(clientID, to_string(playerCount));
 }
 
 
 /* called when a client disconnects */
 void closeHandler(int clientID){
-    ostringstream os;
-    os << "Stranger " << clientID << " has left.";
+	pong.pause();    
 
     vector<int> clientIDs = server.getClientIDs();
     for (int i = 0; i < clientIDs.size(); i++){
         if (clientIDs[i] != clientID )
-            server.wsSend(clientIDs[i], os.str());
+            server.wsSend(clientIDs[i], "pause");
     }
 }
 
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message){			//check which port the client is in and only send message to that group of clients
-    ostringstream os;
+   // ostringstream os;
 
     //vector<int> clientIDs = server.getClientIDs();
 	//int channelNum = server.getClientPort(clientID);
@@ -83,8 +76,9 @@ void periodicHandler(){
  ***********************************************************************/
 void parseStringUpdatePacket(int clientID, string message){
     vector<string> tokens = split(message);
-    if(!clientID_username_map.count(clientID)){
+    if(!clientID_username_map.count(clientID) && playerCount <= 4){
         clientID_username_map.insert(pair<int, string>(clientID, tokens.at(0)));
+		playerCount++;
     }
 	Pong::PLAYER player = static_cast<Pong::PLAYER>(stoi(tokens.at(0)));
 
@@ -95,7 +89,7 @@ void parseStringUpdatePacket(int clientID, string message){
     int paddleTop = stoi(tokens[5]); //will use later < VV 
 	int paddleLeft = stoi(tokens[6]);
 
-    pong.updateBall(ballXpos, ballYpos, ballXdir, ballYdir);
+    //pong.updateBall(ballXpos, ballYpos, ballXdir, ballYdir);
 
     pong.updateInputs(player, tokens[7]);
 }
