@@ -173,12 +173,12 @@
 		ball.style.top = ballYPos + 'px';
 		ball.style.left = ballXPos + 'px';
 	}
-	function movePaddle2() {
-		paddle2Top += paddle2Direction;
+        function movePaddle2() {
+		//paddle2Top += paddle2Direction;
 		paddle2.style.top = paddle2Top + 'px';
 	}
 	function movePaddle1() {
-		paddle1Top += paddle1Direction;
+		//paddle1Top += paddle1Direction;
 		paddle1.style.top = paddle1Top + 'px';
 	}
 	function checkBallAgainstPaddle(paddle){
@@ -288,7 +288,8 @@
 				clearInterval(paddle2Timer);
 				paddle2Timer = null;
 				break;
-			case 'KeyS':
+            case 'KeyS':
+                clearInterval(paddle1Timer);
 				InfoString += '1|' + ballXPos.toString() + '|' + ballYPos.toString() + '|' + ballXDir.toString() + '|' + ballYDir.toString() +
                         	'|' + paddle1Top.toString() + '|S';
                     		send('message', InfoString);
