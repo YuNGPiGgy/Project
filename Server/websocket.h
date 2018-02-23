@@ -50,7 +50,7 @@ typedef void (*messageCallback)(int, string);
 
 class wsClient{
 public:
-    wsClient(int _socket, in_addr _addr){
+    wsClient(int _socket, in_addr _addr, int portNum){
         socket = _socket;
         MessageBuffer.clear();
         ReadyState = WS_READY_STATE_CONNECTING;
@@ -63,9 +63,11 @@ public:
         FrameBuffer.clear();
         MessageOpcode = 0;
         MessageBufferLength = 0;
+		port = portNum;
     }
 
     int socket;                            // client socket
+	int port;
     string MessageBuffer;                  // a blank string when there's no incoming frames
     int ReadyState;                        // between 0 and 3
     time_t LastRecvTime;                   // set to time() when the client is added
@@ -86,24 +88,26 @@ public:
         callOnClose = NULL;
         callOnMessage = NULL;
         callPeriodic = NULL;
-    }
+    } 
 
     void setOpenHandler(defaultCallback callback);
     void setCloseHandler(defaultCallback callback);
     void setMessageHandler(messageCallback callback);
     void setPeriodicHandler(nullCallback callback);
-    void startServer(int port);
+    void startServer(int* ports);
     void stopServer();
     bool wsSend(int clientID, string message, bool binary = false);
     void wsClose(int clientID);
     vector<int> getClientIDs();
     string getClientIP(int clientID);
+	int getClientPort(int clientID);
 private:
-    vector<wsClient *> wsClients;
+	vector<wsClient *> wsClients;
     map<int, int> socketIDmap;
     fd_set fds;
     int fdmax;
-    int listenfd;
+    vector<SOCKET> fdVector;
+	int listenfd;
 
     void wsCheckIdleClients();
     bool wsSendClientMessage(int clientID, unsigned char opcode, string message);
@@ -116,7 +120,7 @@ private:
     bool wsProcessClientHandshake(int clientID, char *buffer);
     bool wsProcessClient(int clientID, char *buffer, int bufferLength);
     int wsGetNextClientID();
-    void wsAddClient(int socket, in_addr ip);
+    void wsAddClient(int socket, in_addr ip, int portNum);
 
     defaultCallback callOnOpen;
     defaultCallback callOnClose;

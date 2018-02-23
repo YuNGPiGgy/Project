@@ -114,13 +114,13 @@ int main(int argc, char *argv[])
 	server.setOpenHandler(openHandler);
 	server.setCloseHandler(closeHandler);
 	server.setMessageHandler(messageHandler);
-    server.setPeriodicHandler(periodicHandler);
+    //server.setPeriodicHandler(periodicHandler);
 
 
     /* start the chatroom server, listen to ip '127.0.0.1' and ports '8000'-'8003' */
-//	int ports[] = { 8000, 8001, 8002, 8003 };
+    int ports[] = { 8000, 8001, 8002, 8003 };
 
-	server.startServer(8000);
+	server.startServer(ports);
 
     return 1;
 }

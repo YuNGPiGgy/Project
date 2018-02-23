@@ -128,6 +128,10 @@ string webSocket::getClientIP(int clientID){
 	return string(inet_ntop(AF_INET, &(wsClients[clientID]->addr), clientIP_str, INET_ADDRSTRLEN));
 }
 
+int webSocket::getClientPort(int clientID) {
+	return wsClients[clientID] != NULL ? wsClients[clientID]->port : -1 ;
+}
+
 void webSocket::wsCheckIdleClients(){
     time_t current = time(NULL);
     for (int i = 0; i < wsClients.size(); i++){
@@ -640,13 +644,13 @@ int webSocket::wsGetNextClientID(){
     return i;
 }
 
-void webSocket::wsAddClient(int socket, in_addr ip){
+void webSocket::wsAddClient(int socket, in_addr ip, int portNum){ //add information here to keep track of which port the client is connecting to
     FD_SET(socket, &fds);
     if (socket > fdmax)
         fdmax = socket;
 
     int clientID = wsGetNextClientID();
-    wsClient *newClient = new wsClient(socket, ip);
+    wsClient *newClient = new wsClient(socket, ip, portNum);
     if (clientID >= wsClients.size()){
         wsClients.push_back(newClient);
     }
@@ -672,62 +676,73 @@ void webSocket::setPeriodicHandler(nullCallback callback){
     callPeriodic = callback;
 }
 
-void webSocket::startServer(int port){
+void webSocket::startServer(int* ports){
     showAvailableIP();
 
     int yes = 1;
     char buf[4096];
-    struct sockaddr_in serv_addr, cli_addr;
-
-    memset(&serv_addr, '0', sizeof(serv_addr));
-    memset(&cli_addr, '0', sizeof(cli_addr));
-    serv_addr.sin_family = AF_INET;
-    //serv_addr.sin_addr.s_addr = inet_addr(ip);
-    serv_addr.sin_addr.s_addr = INADDR_ANY;
-    serv_addr.sin_port = htons(port);
+	struct sockaddr_in * serv_addr;
+	serv_addr = new sockaddr_in[4];
+    struct sockaddr_in cli_addr; //need 4 sockaddr_in 
+	
+	//set up 4 sockaddr_in serv_addr 
+	for (int i = 0; i < 4; i++) {
+		memset(&serv_addr[i], '0', sizeof(serv_addr));
+		memset(&cli_addr, '0', sizeof(cli_addr));
+		serv_addr[i].sin_family = AF_INET;
+		//serv_addr.sin_addr.s_addr = inet_addr(ip);
+		serv_addr[i].sin_addr.s_addr = INADDR_ANY;
+		serv_addr[i].sin_port = htons(ports[i]);
+	}
 
 #if _WIN32
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
 #endif
+	for (int i = 0; i < 4; i++) {
+		fdVector.push_back( socket(AF_INET, SOCK_STREAM, 0));
+		if (setsockopt(fdVector.at(i), SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(int)) == -1) {
+			perror("setsockopt() error!");
+			exit(1);
+		}
+		if (bind(fdVector.at(i), (struct sockaddr*)&serv_addr[i], sizeof(serv_addr[i])) == -1) {
+			perror("bind() error!");
+			exit(1);
+		}
+		if (listen(fdVector.at(i), 10) == -1) {
+			perror("listen() error!");
+			exit(1);
+		}
+	}
 
-    listenfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(int)) == -1){
-        perror("setsockopt() error!");
-        exit(1);
-    }
-    if (bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1){
-        perror("bind() error!");
-        exit(1);
-    }
-    if (listen(listenfd, 10) == -1){
-        perror("listen() error!");
-        exit(1);
-    }
+	// Initialize the set
+	FD_ZERO(&fds);
+	fdmax = 0;
+	for (int j = 0; j < fdVector.size(); j++) {
+		FD_SET(fdVector.at(j), &fds);
+		fdmax = (fdmax > fdVector.at(j)) ? fdmax : fdVector.at(j);
+	}
 
-    fdmax = listenfd;
     fd_set read_fds;
-    FD_ZERO(&fds);
-    FD_SET(listenfd, &fds);
     FD_ZERO(&read_fds);
 
     struct timeval timeout;
     time_t nextPingTime = time(NULL) + 1;
-    while (FD_ISSET(listenfd, &fds)){
+	int counter = 0;
+    while (FD_ISSET(fdVector.at(counter), &fds)){
         read_fds = fds;
         timeout.tv_sec = 0;
         timeout.tv_usec = 10000;
-        if (select(fdmax+1, &read_fds, NULL, NULL, &timeout) > 0){
+
+        if (select(fdmax+1, &read_fds, NULL, NULL, &timeout) > 0){ //this is choosing a socket to read/write 
             for (int i = 0; i <= fdmax; i++){
                 if (FD_ISSET(i, &read_fds)){
-                    if (i == listenfd){
+                    if (i == fdVector.at(counter)){ //this is called whenever there is an incoming connection request 
                         socklen_t addrlen = sizeof(cli_addr);
-                        int newfd = accept(listenfd, (struct sockaddr*)&cli_addr, &addrlen);
+                        int newfd = accept(fdVector.at(counter), (struct sockaddr*)&cli_addr, &addrlen);
                         if (newfd != -1){
                             /* add new client */
-                            wsAddClient(newfd, cli_addr.sin_addr);
-                            //Deprecated ntoa API
-							//printf("New connection from %s on socket %d\n", inet_ntoa(cli_addr.sin_addr), newfd);
+                            wsAddClient(newfd, cli_addr.sin_addr, counter); //this is the original listening socket -- this is where we add more code to handle other sockets
 							char cli_addr_str[INET_ADDRSTRLEN];
 							printf("New connection from %s on socket %d\n", inet_ntop(AF_INET, &(cli_addr.sin_addr), cli_addr_str, INET_ADDRSTRLEN));
                         }
@@ -756,6 +771,9 @@ void webSocket::startServer(int port){
 
         if (callPeriodic != NULL)
             callPeriodic();
+
+		if (++counter >= fdVector.size())
+			counter = 0;
     }
 }
 
@@ -774,7 +792,8 @@ void webSocket::stopServer(){
 #ifdef __linux__
     close(listenfd);
 #elif _WIN32
-    closesocket(listenfd);
+	for(int i = 0; i < fdVector.size(); i ++)
+		closesocket(fdVector.at(i));
 #endif
 
     wsClients.clear();
