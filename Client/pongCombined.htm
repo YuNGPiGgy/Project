@@ -1,0 +1,199 @@
+<HTML>
+<HEAD>
+    <meta charset="utf-8">
+    <title> Pong </title>
+
+    <style>
+        input, textarea {
+            border: 2px solid #990033;
+            margin: 10px;
+            padding: 0px;
+        }
+
+        html, body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+            padding-right: 100px;
+        }
+
+        #ip {
+            line-height: 25px;
+            color: black;
+        }
+
+        #port {
+            line-height: 25px;
+            color: black
+        }
+
+        #username {
+            line-height: 25px;
+            color: black;
+        }
+
+        #body {
+            position: fixed;
+            color: white;
+            top: 500px;
+            left: 200px;
+            font-size: 30px;
+        }
+
+        #Canvas {
+            color: white;
+            margin: auto;
+            display: block;
+            padding: 7px;
+            position: fixed;
+            right: 150px;
+            top: 0;
+            bottom: 0;
+        }
+
+        #connectButton {
+            color: black;
+            background-color: #FFCC00;
+            font-size: 25px;
+            margin-top: 20px;
+            float: right;
+        }
+
+        #title {
+            color: white;
+            position: fixed;
+            top: 300px;
+            left: 200px;
+            font-size: 75px;
+            font-family: Lucida Console;
+        }
+
+        #credit {
+            color: white;
+            position: fixed;
+            bottom: 0;
+            font-size: 25px;
+        }
+    </style>
+</HEAD>
+<BODY>
+    <div id="body">
+        Server IP: <input type="text" id="ip" size=30px><br />
+        Server Port: <input type="text" id="port" size=27px><br />
+        Username: <input type="text" id="username" size=29px><br />
+        <button type="button" id="connectButton" onclick="connect();">Connect</button>
+    </div>
+
+
+</BODY>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="fancywebsocket.js"></script>
+<body src="pong1.html">
+</body>
+<canvas id="Canvas" width="200" height="100"
+        style="border:1px solid #000000;"></canvas>
+<br />
+<div id="credit">
+    Created By: Min Woo Choi, Dominic Langmesser, and Yung-Chu Chuang
+</div>
+<script>
+    var Server;
+    var canvas = document.getElementById("Canvas");
+
+    function send(text) {
+        Server.send('message', text);
+    }
+
+    function connect() {
+        Server = new FancyWebSocket('ws://' + document.getElementById('ip').value + ':' + document.getElementById('port').value);
+
+        //Let the user know we're connected
+        Server.bind('open', function () {
+            document.getElementById("connectButton").disabled = true;
+        });
+
+        //Disconnection occurred.
+        Server.bind('close', function (data) {
+            document.getElementById("connectButton").disabled = false;
+        });
+
+        //Log any messages sent from server
+        Server.bind('message', function (payload) {
+            update(payload);
+        });
+
+        Server.connect();
+    }
+
+</script>
+<script>
+    //Get keyboard inputs KEYDOWN
+    //this uses the interval to only take a key input ever certain number of frames
+    document.addEventListener('keydown', function (evt) {
+        switch (evt.code) {
+            case 'ArrowDown':
+                if (!paddle2Timer) {
+                    paddle2Direction = 50;
+                    paddle2Timer = setInterval(movePaddle2, 100);
+                    InfoString += playerNum +
+                        '|' + ballXPos.toString() +
+                        '|' + ballYPos.toString() +
+                        '|' + ballXDir.toString() +
+                        '|' + ballYDir.toString() +
+                        '|' + paddle1Top.toString() + '|D';
+                    send('message', InfoString);
+                    InfoString = "";
+                }
+                break;
+            case 'ArrowUp':
+                if (!paddle2Timer) {
+                    paddle2Direction = -50;
+                    paddle2Timer = setInterval(movePaddle2, 100);
+                    InfoString += playerNum +
+                        '|' + ballXPos.toString() +
+                        '|' + ballYPos.toString() +
+                        '|' + ballXDir.toString() +
+                        '|' + ballYDir.toString() +
+                        '|' + paddle1Top.toString() + '|U';
+                    send('message', InfoString);
+                    InfoString = "";
+                }
+                break;
+            case 'ArrowRight':
+                if (!paddle1Timer) {
+                    paddle1Direction = 50;
+                    paddle1Timer = setInterval(movePaddle1, 100);
+                    InfoString += playerNum +
+                        '|' + ballXPos.toString() +
+                        '|' + ballYPos.toString() +
+                        '|' + ballXDir.toString() +
+                        '|' + ballYDir.toString() +
+                        '|' + paddle1Top.toString() + '|R';
+                    send('message', InfoString);
+                    InfoString = "";
+                }
+                break;
+
+            case 'ArrowLeft':
+                if (!paddle1Timer) {
+                    paddle1Direction = -50;
+                    paddle1Timer = setInterval(movePaddle1, 100);
+                    InfoString += playerNum +
+                        '|' + ballXPos.toString() +
+                        '|' + ballYPos.toString() +
+                        '|' + ballXDir.toString() +
+                        '|' + ballYDir.toString() +
+                        '|' + paddle1Top.toString() + '|L';
+                    send('message', InfoString);
+                    InfoString = "";
+                }
+                break;
+        }
+        console.log(evt);
+    })
+</script>
+
+
+</HTML>
