@@ -7,6 +7,7 @@
 #include <windows.h>
 #include <process.h>
 #include "pong50926235.h"
+#include <queue>
 #define INTERVAL_MS 10
 
 using namespace std;
@@ -15,17 +16,21 @@ webSocket server;
 map<int, string> clientID_username_map;
 Pong pong(600, 800);
 int playerCount = 0;
-int players[] = { 0,0,0,0 };
 
 void parseStringUpdatePacket(int clientID, string message);
 vector<string> split(string toSplit);
 
+struct player {
+	int clientID;
+	string username;
+};
+player * players;
+
 
 /* called when a client connects */
 void openHandler(int clientID){
+
     server.wsSend(clientID, to_string(playerCount));
-	players[playerCount] = clientID;
-	playerCount++;
 }
 
 
@@ -39,8 +44,6 @@ void closeHandler(int clientID){
             server.wsSend(clientIDs[i], "pause");
     }
 }
-
-
 
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message){			//check which port the client is in and only send message to that group of clients
@@ -59,10 +62,10 @@ void periodicHandler(){
     clock_t current = clock();
     if (current >= next){
         vector<int> clientIDs = server.getClientIDs();
-		for (int i = 0; i < clientIDs.size(); i++)
-			server.wsSend(clientIDs[i], pong.getGameState());
+        for (int i = 0; i < clientIDs.size(); i++)
+            server.wsSend(clientIDs[i], pong.getGameState());
 
-        next = clock() + 100;
+        next = clock() + 10;
     }
 }
 
@@ -83,18 +86,24 @@ void parseStringUpdatePacket(int clientID, string message){
         clientID_username_map.insert(pair<int, string>(clientID, tokens.at(0)));
 		playerCount++;
     }
-	Pong::PLAYER player = static_cast<Pong::PLAYER>(stoi(tokens.at(0)));
+	int player_num = -1;
+	for (int i = 0; i < 4; ++i) {
+		if (clientID == players[i].clientID)
+			player_num = i;
+	}
+	if (player_num == -1) {
+		if (playerCount == 4)
+			return;
+		else
+			players[playerCount].clientID = clientID;
+	}
+	Pong::PLAYER player = static_cast<Pong::PLAYER>(player_num);
 
-    int ballXpos = stoi(tokens[1]);
-    int ballYpos = stoi(tokens[2]);
-    int ballXdir = stoi(tokens[3]);
-    int ballYdir = stoi(tokens[4]);
-    int paddleTop = stoi(tokens[5]); //will use later < VV 
-	int paddleLeft = stoi(tokens[6]);
+	int input = stoi(tokens[0]);
 
     //pong.updateBall(ballXpos, ballYpos, ballXdir, ballYdir);
 
-    pong.updateInputs(player, tokens[7]);
+    pong.updateInputs(player, tokens[0]);
 }
 
 /***********************************************************************
@@ -114,12 +123,11 @@ int main(int argc, char *argv[])
 {
 
 	/* set event handler */
+	players = new player[4];
 	server.setOpenHandler(openHandler);
 	server.setCloseHandler(closeHandler);
 	server.setMessageHandler(messageHandler);
     server.setPeriodicHandler(periodicHandler);
-
-	pong.init();
 
 
     /* start the chatroom server, listen to ip '127.0.0.1' and ports '8000'-'8003' */

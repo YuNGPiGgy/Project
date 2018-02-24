@@ -86,10 +86,14 @@
         Username: <input type="text" id="username" size=29px><br />
         <button type="button" id="connectButton" onclick="connect();">Connect</button>
     </div>
+
+
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="fancywebsocket.js"></script>
+<body src="pong1.html">
+</body>
 <canvas id="game" width="500" height="500"
         style="border:1px solid #000000;"></canvas>
 <br />
@@ -98,6 +102,7 @@
 </div>
 <script>
     var Server;
+    var username;
     var canvas = document.getElementById("Canvas");
 
     function update(text) {
@@ -107,12 +112,13 @@
         game.draw(tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], tokens[5], tokens[6], tokens[7]);
     }
 
-
     function send(text) {
         Server.send('message', text);
     }
 
     function connect() {
+        username = document.getElementById('username').value;
+
         Server = new FancyWebSocket('ws://' + document.getElementById('ip').value + ':' + document.getElementById('port').value);
 
         //Let the user know we're connected
@@ -166,7 +172,6 @@
     //"ballPosX | ballPosY | ballDirX | ballDirY | paddle1top | paddle2top | paddle3left | paddle4left | scoreP1 | scoreP2 | scoreP3 | scoreP4"
     Game.prototype.draw = function (bX, bY, bvX, bvY, p1T, p2T, p3L, p4L, s1, s2, s3, s4) {
         this.context.clearRect(0, 0, this.width, this.height);
-        this.context.fillRect(this.width / 2, 0, 2, this.height);
 
         this.ball.draw(this.context, bX, bY);
 
@@ -179,78 +184,25 @@
         this.display3.draw(this.context, s3);
         this.display4.draw(this.context, s4);
     };
+    
 
-    /*
-    Game.prototype.update = function () {
-        if (this.paused)
-            return;
-
-        this.ball.update();
-        this.display1.value = this.p1.score;
-        this.display2.value = this.p2.score;
-
-        // To which Y direction the paddle is moving
-        if (this.keys.isPressed(83)) { // DOWN
-            this.p1.y = Math.min(this.height - this.p1.height, this.p1.y + 4);
-        } else if (this.keys.isPressed(87)) { // UP
-            this.p1.y = Math.max(0, this.p1.y - 4);
+    // To which Y direction the paddle is moving 
+    Game.prototype.updateInputs = function () {
+        var input = ''
+        if (this.keys.isPressed(37)) { // LEFT
+            input += username + "|L|" + toString(event.timeStamp);
+            send(input);
+        } else if (this.keys.isPressed(38)) { // UP
+            input += username + "|U|" + toString(event.timeStamp);
+            send(input);
+        } else if (this.keys.isPressed(39)) { // RIGHT
+            input += username + "|R|" + toString(event.timeStamp);
+            send(input);
+        } else if (this.keys.isPressed(40)) { // DOWN
+            input += username + "|D|" + toString(event.timeStamp);
+            send(input);
         }
-
-        if (this.ball.vx > 0) {
-            if (this.p2.x <= this.ball.x + this.ball.width &&
-                this.p2.x > this.ball.x - this.ball.vx + this.ball.width) {
-                var collisionDiff = this.ball.x + this.ball.width - this.p2.x;
-                var k = collisionDiff / this.ball.vx;
-                var y = this.ball.vy * k + (this.ball.y - this.ball.vy);
-                if (y >= this.p2.y && y + this.ball.height <= this.p2.y + this.p2.height) {
-                    // collides with right paddle
-                    this.ball.x = this.p2.x - this.ball.width;
-                    this.ball.y = Math.floor(this.ball.y - this.ball.vy + this.ball.vy * k);
-                    this.ball.vx = -this.ball.vx;
-                }
-            }
-        } else {
-            if (this.p1.x + this.p1.width >= this.ball.x) {
-                var collisionDiff = this.p1.x + this.p1.width - this.ball.x;
-                var k = collisionDiff / -this.ball.vx;
-                var y = this.ball.vy * k + (this.ball.y - this.ball.vy);
-                if (y >= this.p1.y && y + this.ball.height <= this.p1.y + this.p1.height) {
-                    // collides with the left paddle
-                    this.ball.x = this.p1.x + this.p1.width;
-                    this.ball.y = Math.floor(this.ball.y - this.ball.vy + this.ball.vy * k);
-                    this.ball.vx = -this.ball.vx;
-                }
-            }
-        }
-
-        // Top and bottom collision
-        if ((this.ball.vy < 0 && this.ball.y < 0) ||
-            (this.ball.vy > 0 && this.ball.y + this.ball.height > this.height)) {
-            this.ball.vy = -this.ball.vy;
-        }
-
-        if (this.ball.x >= this.width)
-            this.score(this.p1);
-        else if (this.ball.x + this.ball.width <= 0)
-            this.score(this.p2);
     };
-
-    Game.prototype.score = function (p) {
-        // player scores
-        p.score++;
-        var player = p == this.p1 ? 0 : 1;
-
-        // set ball position
-        this.ball.x = this.width / 2;
-        this.ball.y = p.y + p.height / 2;
-
-        // set ball velocity
-        this.ball.vy = Math.floor(Math.random() * 12 - 6);
-        this.ball.vx = 7 - Math.abs(this.ball.vy);
-        if (player == 1)
-            this.ball.vx *= -1;
-    };
-    */
 
     // PADDLE
     function Paddle(x, y, width, height, color) {
@@ -277,12 +229,6 @@
         this.width = 4;
         this.height = 4;
     }
-    /*
-    Ball.prototype.update = function () {
-        this.x += this.vx;
-        this.y += this.vy;
-    };
-    */
     Ball.prototype.draw = function (p, x, y) {
         p.fillRect(this.x, this.y, this.width, this.height);
     };
@@ -299,49 +245,49 @@
     Display.prototype.draw = function (p) {
         p.fillStyle = this.color;
         p.fillText(this.value, this.x, this.y);
-    };
-
-
-    // KEY LISTENER
-    function KeyListener() {
-        this.pressedKeys = [];
-
-        this.keydown = function (e) {
-            this.pressedKeys[e.keyCode] = true;
-        };
-
-        this.keyup = function (e) {
-            this.pressedKeys[e.keyCode] = false;
-        };
-
-        document.addEventListener("keydown", this.keydown.bind(this));
-        document.addEventListener("keyup", this.keyup.bind(this));
     }
 
-    KeyListener.prototype.isPressed = function (key) {
-        return this.pressedKeys[key] ? true : false;
+
+// KEY LISTENER
+function KeyListener() {
+    this.pressedKeys = [];
+
+    this.keydown = function (e) {
+        this.pressedKeys[e.keyCode] = true;
     };
 
-    KeyListener.prototype.addKeyPressListener = function (keyCode, callback) {
-        document.addEventListener("keypress", function (e) {
-            if (e.keyCode == keyCode)
-                callback(e);
-        });
+    this.keyup = function (e) {
+        this.pressedKeys[e.keyCode] = false;
     };
 
+    document.addEventListener("keydown", this.keydown.bind(this));
+    document.addEventListener("keyup", this.keyup.bind(this));
+}
 
-    // Initialize our game instance
-    var game = new Game();
+KeyListener.prototype.isPressed = function (key) {
+    return this.pressedKeys[key] ? true : false;
+};
 
-    function MainLoop() {
-        //game.update();
-        //game.draw();
-        // Call the main loop again at a frame rate of 30fps
-        //setTimeout(MainLoop, 33.3333);
-    }
+KeyListener.prototype.addKeyPressListener = function (keyCode, callback) {
+    document.addEventListener("keypress", function (e) {
+        if (e.keyCode == keyCode)
+            callback(e);
+    });
+};
 
-    // Start the game execution
-    MainLoop();
+
+// Initialize our game instance
+var game = new Game();
+
+function MainLoop() {
+    // Call the main loop again at a frame rate of 30fps
+    game.updateInputs();
+    game.draw();
+    setTimeout(MainLoop, 33.3333);
+}
+
+// Start the game execution
+MainLoop();
 </script>
 
 
