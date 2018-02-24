@@ -39,7 +39,7 @@ private:
 			this->radius = 20;
 			this->owner = p1;
 		}
-        ball(double x, double y, double velX, double velY, PLAYER owner, double speed=2, double radius=20){
+        ball(int x, int y, int velX, int velY, PLAYER owner, int speed=2, int radius=20){
             this->x = x;
             this->y = y;
             this->v.x = velX;
@@ -48,15 +48,15 @@ private:
             this->radius = radius;
 			this->owner = owner;
         }
-		double x;
-		double y;
+		int x;
+		int y;
 		struct velocity{
-			double x;
-			double y;
+			int x;
+			int y;
 		};
 		velocity v;
-		double speed = 2;
-		double radius = 20;
+		int speed = 2;
+		int radius = 20;
 		PLAYER owner;
 	};
 

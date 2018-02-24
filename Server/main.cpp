@@ -15,6 +15,7 @@ webSocket server;
 map<int, string> clientID_username_map;
 Pong pong(600, 800);
 int playerCount = 0;
+int players[] = { 0,0,0,0 };
 
 void parseStringUpdatePacket(int clientID, string message);
 vector<string> split(string toSplit);
@@ -22,8 +23,9 @@ vector<string> split(string toSplit);
 
 /* called when a client connects */
 void openHandler(int clientID){
-
     server.wsSend(clientID, to_string(playerCount));
+	players[playerCount] = clientID;
+	playerCount++;
 }
 
 
@@ -37,6 +39,8 @@ void closeHandler(int clientID){
             server.wsSend(clientIDs[i], "pause");
     }
 }
+
+
 
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message){			//check which port the client is in and only send message to that group of clients
@@ -54,12 +58,11 @@ void periodicHandler(){
     static clock_t next = clock() + interval_clocks;
     clock_t current = clock();
     if (current >= next){
-
         vector<int> clientIDs = server.getClientIDs();
-        for (int i = 0; i < clientIDs.size(); i++)
-            server.wsSend(clientIDs[i], pong.getGameState());
+		for (int i = 0; i < clientIDs.size(); i++)
+			server.wsSend(clientIDs[i], pong.getGameState());
 
-        next = time(NULL) + 5;
+        next = clock() + 100;
     }
 }
 
@@ -114,7 +117,9 @@ int main(int argc, char *argv[])
 	server.setOpenHandler(openHandler);
 	server.setCloseHandler(closeHandler);
 	server.setMessageHandler(messageHandler);
-    //server.setPeriodicHandler(periodicHandler);
+    server.setPeriodicHandler(periodicHandler);
+
+	pong.init();
 
 
     /* start the chatroom server, listen to ip '127.0.0.1' and ports '8000'-'8003' */
