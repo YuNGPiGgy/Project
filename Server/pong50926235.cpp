@@ -180,7 +180,7 @@ using namespace std;
 
 	/***************************************************************
 		Send gamestate as string in format (without spaces):
-		"ballPosX | ballPosY | ballDirX | ballDirY | paddle1top | paddle2top | paddle3left | paddle4left"
+		"ballPosX | ballPosY | ballDirX | ballDirY | paddle1top | paddle2top | paddle3left | paddle4left | scoreP1 | scoreP2 | scoreP3 | scoreP4"
 		where:
 		paddle1 is p1(left)
 		paddle2 is p2(right)
@@ -200,14 +200,18 @@ using namespace std;
 			updatePaddle(p4, player4bottom.buttonDownMovement);
 
 		string returnString = ""; 
-		returnString += to_string(gameBall.x)			+ '|' + 
-								to_string(gameBall.y)			+ '|' + 
-								to_string(gameBall.v.x)			+ '|' + 
-								to_string(gameBall.v.y)			+ '|' + 
-								to_string(player1left.top)		+ '|' + 
-								to_string(player2right.top)	+ '|' + 
-								to_string(player3top.left)		+ '|' + 
-								to_string(player4bottom.left);
+		returnString += to_string(gameBall.x)				+ '|' + 
+								to_string(gameBall.y)				+ '|' + 
+								to_string(gameBall.v.x)				+ '|' + 
+								to_string(gameBall.v.y)				+ '|' + 
+								to_string(player1left.top)			+ '|' + 
+								to_string(player2right.top)		+ '|' + 
+								to_string(player3top.left)			+ '|' + 
+								to_string(player4bottom.left)	+ '|' +
+								to_string(score.p1)					+ '|' +
+								to_string(score.p2)					+ '|' +
+								to_string(score.p3)					+ '|' +
+								to_string(score.p4);
 		return returnString; 
 	}
 

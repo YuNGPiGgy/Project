@@ -101,8 +101,10 @@
     var canvas = document.getElementById("Canvas");
 
     function update(text) {
-        console.log(text);
-        //game.draw();
+        //console.log(text);
+        //"ballPosX | ballPosY | ballDirX | ballDirY | paddle1top | paddle2top | paddle3left | paddle4left | scoreP1 | scoreP2 | scoreP3 | scoreP4"
+        var tokens = text.split("|");
+        game.draw(tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], tokens[5], tokens[6], tokens[7]);
     }
 
 
@@ -141,12 +143,18 @@
         this.context.fillStyle = "white";
         this.keys = new KeyListener();
 
-        this.p1 = new Paddle(5, 0);
+        this.p1 = new Paddle(5, 0, 2, 28, 'red');
         this.p1.y = this.height / 2 - this.p1.height / 2;
-        this.display1 = new Display(this.width / 4, 25);
-        this.p2 = new Paddle(this.width - 5 - 2, 0);
+        this.display1 = new Display(25, 25, 'red' );
+        this.p2 = new Paddle(this.width - 5 - 2, 0, 2, 28, 'blue');
         this.p2.y = this.height / 2 - this.p2.height / 2;
-        this.display2 = new Display(this.width * 3 / 4, 25);
+        this.display2 = new Display(this.width -25, this.height - 25, 'blue');
+        this.p3 = new Paddle(0, 5, 28, 2, 'yellow');
+        this.p3.x = this.width / 2 - this.p3.width / 2;
+        this.display3 = new Display(this.width - 25, 25, 'yellow');
+        this.p4 = new Paddle(0, this.height - 5 - 2, 28, 2, 'green');
+        this.p4.x = this.width / 2 - this.p4.width / 2;
+        this.display4 = new Display(25, this.height - 25, 'green');
 
         this.ball = new Ball();
         this.ball.x = this.width / 2;
@@ -155,17 +163,23 @@
         this.ball.vx = 7 - Math.abs(this.ball.vy);
     }
 
-    Game.prototype.draw = function () {
+    //"ballPosX | ballPosY | ballDirX | ballDirY | paddle1top | paddle2top | paddle3left | paddle4left | scoreP1 | scoreP2 | scoreP3 | scoreP4"
+    Game.prototype.draw = function (bX, bY, bvX, bvY, p1T, p2T, p3L, p4L, s1, s2, s3, s4) {
         this.context.clearRect(0, 0, this.width, this.height);
         this.context.fillRect(this.width / 2, 0, 2, this.height);
 
-        this.ball.draw(this.context);
+        this.ball.draw(this.context, bX, bY);
 
-        this.p1.draw(this.context);
-        this.p2.draw(this.context);
-        this.display1.draw(this.context);
-        this.display2.draw(this.context);
+        this.p1.draw(this.context, p1T);
+        this.p2.draw(this.context, p2T);
+        this.p3.draw(this.context, p3L);
+        this.p4.draw(this.context, p4L);
+        this.display1.draw(this.context, s1);
+        this.display2.draw(this.context, s2);
+        this.display3.draw(this.context, s3);
+        this.display4.draw(this.context, s4);
     };
+
     /*
     Game.prototype.update = function () {
         if (this.paused)
@@ -239,15 +253,17 @@
     */
 
     // PADDLE
-    function Paddle(x, y) {
+    function Paddle(x, y, width, height, color) {
         this.x = x;
         this.y = y;
-        this.width = 2;
-        this.height = 28;
+        this.width = width; // 2
+        this.height = height; // 28
         this.score = 0;
+        this.color = color;
     }
 
     Paddle.prototype.draw = function (p) {
+        p.fillStyle = this.color;
         p.fillRect(this.x, this.y, this.width, this.height);
     };
 
@@ -267,19 +283,21 @@
         this.y += this.vy;
     };
     */
-    Ball.prototype.draw = function (p) {
+    Ball.prototype.draw = function (p, x, y) {
         p.fillRect(this.x, this.y, this.width, this.height);
     };
 
 
     //DISPLAY
-    function Display(x, y) {
+    function Display(x, y, color) {
         this.x = x;
         this.y = y;
         this.value = 0;
+        this.color = color;
     }
 
     Display.prototype.draw = function (p) {
+        p.fillStyle = this.color;
         p.fillText(this.value, this.x, this.y);
     };
 
@@ -317,7 +335,7 @@
 
     function MainLoop() {
         //game.update();
-        game.draw();
+        //game.draw();
         // Call the main loop again at a frame rate of 30fps
         //setTimeout(MainLoop, 33.3333);
     }
