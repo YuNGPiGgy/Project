@@ -86,12 +86,9 @@
         Username: <input type="text" id="username" size=29px><br />
         <button type="button" id="connectButton" onclick="connect();">Connect</button>
     </div>
-
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="fancywebsocket.js"></script>
-<body src="pong1.html">
-</body>
 <canvas id="game" width="500" height="500"
         style="border:1px solid #000000;"></canvas>
 <br />
@@ -139,6 +136,7 @@
 
 </script>
 <script>
+
     function Game() {
         var canvas = document.getElementById("game");
         this.width = canvas.width;
@@ -188,16 +186,17 @@
     Game.prototype.updateInputs = function () {
         var input = ''
         if (this.keys.isPressed(37)) { // LEFT
-            input += username + "|L|" + toString(event.timeStamp);
+            input += username + "|L|" + Date.now().toString();
             send(input);
         } else if (this.keys.isPressed(38)) { // UP
-            input += username + "|U|" + toString(event.timeStamp);
+            input += username + "|U|" + Date.now().toString();
             send(input);
+            console.log(input);
         } else if (this.keys.isPressed(39)) { // RIGHT
-            input += username + "|R|" + toString(event.timeStamp);
+            input += username + "|R|" + Date.now().toString();
             send(input);
         } else if (this.keys.isPressed(40)) { // DOWN
-            input += username + "|D|" + toString(event.timeStamp);
+            input += username + "|D|" + Date.now().toString();
             send(input);
         }
     };
