@@ -12,20 +12,53 @@
 
 using namespace std;
 
-webSocket server;
-map<int, string> clientID_username_map;
-Pong pong(600, 800);
-int playerCount = 0;
+/*********************************************
 
-void parseStringUpdatePacket(int clientID, string message);
-vector<string> split(string toSplit);
+				HELPER CLASSES 
 
+**********************************************/
 struct player {
 	int clientID;
 	string username;
 };
-player * players;
 
+class input {
+public:
+	int playerNum;
+	string inputChar;
+	long time;
+	input(int p, string inputChar, long time) {
+		this->playerNum = p;
+		this->inputChar = inputChar;
+		this->time = time;
+	}
+};
+
+
+class Compare
+{
+public:
+	bool operator() (input input1, input input2)
+	{
+		return input1.time < input2.time;
+	}
+};
+
+/**************************************************************
+
+						Globals
+
+***************************************************************/
+webSocket server;
+map<int, string> clientID_username_map;
+Pong pong(600, 800);
+int playerCount = 0;
+priority_queue<input, vector<input>, Compare> inputTimeQueue;
+
+void parseStringUpdatePacket(int clientID, string message);
+vector<string> split(string toSplit);
+
+player * players;
 
 /* called when a client connects */
 void openHandler(int clientID){
@@ -46,20 +79,26 @@ void closeHandler(int clientID){
 }
 
 /* called when a client sends a message to the server */
-void messageHandler(int clientID, string message){			//check which port the client is in and only send message to that group of clients
-   // ostringstream os;
-
-    //vector<int> clientIDs = server.getClientIDs();
-	//int channelNum = server.getClientPort(clientID);
+void messageHandler(int clientID, string message){	
+   
     parseStringUpdatePacket(clientID, message);
 }
 
 /* called once per select() loop */
 int interval_clocks = CLOCKS_PER_SEC * INTERVAL_MS / 1000;
 
+void runInputQueue() {
+	for (int i = 0; i < inputTimeQueue.size(); i++) {
+		input in = inputTimeQueue.top();
+		pong.updateInputs(static_cast<Pong::PLAYER>(in.playerNum), in.inputChar);
+		inputTimeQueue.pop();
+	}
+}
+
 void periodicHandler(){
     static clock_t next = clock() + interval_clocks;
     clock_t current = clock();
+	runInputQueue();
     if (current >= next){
         vector<int> clientIDs = server.getClientIDs();
         for (int i = 0; i < clientIDs.size(); i++)
@@ -82,28 +121,22 @@ void periodicHandler(){
  ***********************************************************************/
 void parseStringUpdatePacket(int clientID, string message){
     vector<string> tokens = split(message);
-    if(!clientID_username_map.count(clientID) && playerCount <= 4){
-        clientID_username_map.insert(pair<int, string>(clientID, tokens.at(0)));
-		playerCount++;
-    }
+
 	int player_num = -1;
 	for (int i = 0; i < 4; ++i) {
 		if (clientID == players[i].clientID)
 			player_num = i;
 	}
 	if (player_num == -1) {
-		if (playerCount == 4)
+		if (playerCount >= 4)
 			return;
-		else
+		else {
 			players[playerCount].clientID = clientID;
+			player_num = playerCount++;
+		}
 	}
 	Pong::PLAYER player = static_cast<Pong::PLAYER>(player_num);
-
-	int input = stoi(tokens[0]);
-
-    //pong.updateBall(ballXpos, ballYpos, ballXdir, ballYdir);
-
-    pong.updateInputs(player, tokens[0]);
+	inputTimeQueue.push(input(player_num, tokens[1], std::stol(tokens[2])));
 }
 
 /***********************************************************************
@@ -121,9 +154,9 @@ vector<string> split(string toSplit){
 
 int main(int argc, char *argv[])
 {
+	players = new player[4];
 
 	/* set event handler */
-	players = new player[4];
 	server.setOpenHandler(openHandler);
 	server.setCloseHandler(closeHandler);
 	server.setMessageHandler(messageHandler);

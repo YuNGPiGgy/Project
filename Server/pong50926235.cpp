@@ -200,14 +200,14 @@ using namespace std;
 			updatePaddle(p4, player4bottom.buttonDownMovement);
 
 		string returnString = ""; 
-		returnString += to_string(gameBall.x)				+ '|' + 
+		returnString += to_string(gameBall.x)						+ '|' + 
 								to_string(gameBall.y)				+ '|' + 
 								to_string(gameBall.v.x)				+ '|' + 
 								to_string(gameBall.v.y)				+ '|' + 
 								to_string(player1left.top)			+ '|' + 
-								to_string(player2right.top)		+ '|' + 
+								to_string(player2right.top)			+ '|' + 
 								to_string(player3top.left)			+ '|' + 
-								to_string(player4bottom.left)	+ '|' +
+								to_string(player4bottom.left)		+ '|' +
 								to_string(score.p1)					+ '|' +
 								to_string(score.p2)					+ '|' +
 								to_string(score.p3)					+ '|' +
