@@ -132,11 +132,16 @@ void parseStringUpdatePacket(int clientID, string message){
 			return;
 		else {
 			players[playerCount].clientID = clientID;
+			players[playerCount].username = tokens[0];
 			player_num = playerCount++;
 		}
 	}
 	Pong::PLAYER player = static_cast<Pong::PLAYER>(player_num);
-	inputTimeQueue.push(input(player_num, tokens[1], std::stol(tokens[2])));
+	if (tokens.size() >= 3) {
+		long timestamp = std::stol(tokens[2]);
+		timestamp = artificialLatency(timestamp, 0 /*fixed*/, 0, 0); //0 =fixed, 1=random, 2=incremental (min, max) for incremental
+		inputTimeQueue.push(input(player_num, tokens[1], timestamp));
+	}
 }
 
 /***********************************************************************
@@ -150,6 +155,38 @@ vector<string> split(string toSplit){
         tokens.push_back(item);
     }
     return tokens;
+}
+
+
+/************************************************************************
+
+	Artificial latency 
+	types:
+	0 = fixed		(does not use min and max)
+	1 = random		(uses min and max)
+	2 = incremental (uses min and max)
+*************************************************************************/
+int FIXED_LATENCY = 15;
+int incrementalLatStep = 0;
+
+long artificialLatency(long timestamp, int type, int min, int max) {
+	long toReturn = timestamp;
+	switch (type) {
+	case 0: 
+		toReturn += FIXED_LATENCY;
+		break;
+
+	case 1: 
+		toReturn += rand() % max + min;
+		break;
+
+	case 2: 
+		if (incrementalLatStep + 1 + min > max)
+			incrementalLatStep = 0;
+		toReturn += min + incrementalLatStep++;
+	}
+
+	return toReturn;
 }
 
 int main(int argc, char *argv[])
