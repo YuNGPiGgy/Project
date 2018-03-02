@@ -64,8 +64,23 @@ player * players;
 
 /* called when a client connects */
 void openHandler(int clientID){
+	int player_num = -1;
+	for (int i = 0; i < 4; ++i) {
+		if (clientID == players[i].clientID)
+			player_num = i;
+	}
+	if (player_num == -1) {
+		if (playerCount > 4)
+			return;
+		else if (playerCount == 4)
+			pong.init();
+		else {
+			players[playerCount].clientID = clientID;
+			player_num = playerCount++;
+		}
+	}
 
-    server.wsSend(clientID, to_string(playerCount));
+    server.wsSend(clientID, to_string(player_num));
 }
 
 
@@ -89,7 +104,8 @@ void messageHandler(int clientID, string message){
 int interval_clocks = CLOCKS_PER_SEC * INTERVAL_MS / 1000;
 
 void runInputQueue() {
-	for (int i = 0; i < inputTimeQueue.size(); i++) {
+	int size = inputTimeQueue.size();
+	for (int i = 0; i < size; i++) {
 		input in = inputTimeQueue.top();
 		pong.updateInputs(static_cast<Pong::PLAYER>(in.playerNum), in.inputChar);
 		inputTimeQueue.pop();
@@ -99,8 +115,8 @@ void runInputQueue() {
 void periodicHandler(){
     static clock_t next = clock() + interval_clocks;
     clock_t current = clock();
-	runInputQueue();
     if (current >= next){
+		runInputQueue();
         vector<int> clientIDs = server.getClientIDs();
         for (int i = 0; i < clientIDs.size(); i++)
             server.wsSend(clientIDs[i], pong.getGameState());

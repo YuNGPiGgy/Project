@@ -169,13 +169,13 @@
     //"ballPosX | ballPosY | ballDirX | ballDirY | paddle1top | paddle2top | paddle3left | paddle4left | scoreP1 | scoreP2 | scoreP3 | scoreP4"
     Game.prototype.draw = function (bX, bY, bvX, bvY, p1T, p2T, p3L, p4L, s1, s2, s3, s4) {
         this.context.clearRect(0, 0, this.width, this.height);
-
+        console.log(bX.toString() + bY.toString());
         this.ball.draw(this.context, bX, bY);
 
-        this.p1.draw(this.context, p1T);
-        this.p2.draw(this.context, p2T);
-        this.p3.draw(this.context, p3L);
-        this.p4.draw(this.context, p4L);
+        this.p1.draw(this.context, 5, p1T);
+        this.p2.draw(this.context, this.width - 5 - 2, p2T);
+        this.p3.draw(this.context, p3L, 5);
+        this.p4.draw(this.context, p4L, this.height - 5 - 2);
         this.display1.draw(this.context, s1);
         this.display2.draw(this.context, s2);
         this.display3.draw(this.context, s3);
@@ -214,9 +214,9 @@
         this.color = color;
     }
 
-    Paddle.prototype.draw = function (p) {
+    Paddle.prototype.draw = function (p, left, top) {
         p.fillStyle = this.color;
-        p.fillRect(this.x, this.y, this.width, this.height);
+        p.fillRect(left, top, this.width, this.height);
     };
 
 
@@ -230,7 +230,7 @@
         this.height = 4;
     }
     Ball.prototype.draw = function (p, x, y) {
-        p.fillRect(this.x, this.y, this.width, this.height);
+        p.fillRect(x, y, this.width, this.height);
     };
 
 
@@ -242,9 +242,9 @@
         this.color = color;
     }
 
-    Display.prototype.draw = function (p) {
+    Display.prototype.draw = function (p, value) {
         p.fillStyle = this.color;
-        p.fillText(this.value, this.x, this.y);
+        p.fillText(value, this.x, this.y);
     }
 
 
@@ -283,7 +283,7 @@
         // Call the main loop again at a frame rate of 30fps
         game.updateInputs();
         game.draw();
-        setTimeout(MainLoop, 33.3333);
+      //  setTimeout(MainLoop, 33.3333);
     }
 
     // Start the game execution

@@ -75,8 +75,8 @@ using namespace std;
 		//reset ball to center screen and choose random direction
 		gameBall.x = this->width / 2;
 		gameBall.y = this->height / 2;
-		gameBall.v.y = randomDirection(gameBall.speed * -1, gameBall.speed);
 		gameBall.v.x = randomDirection(gameBall.speed * -1, gameBall.speed);
+		gameBall.v.y = 5 - abs(gameBall.v.x);
 
 		// player scores 
 		switch (player) {
@@ -148,8 +148,8 @@ using namespace std;
 		gameBall.owner = p1;
 		gameBall.x = width / 2;
 		gameBall.y = height / 2;
-		gameBall.v.x = randomDirection(-2, 2);
-		gameBall.v.y = randomDirection(-2, 2);
+		gameBall.v.x = randomDirection(gameBall.speed * -1, gameBall.speed);
+		gameBall.v.y = 5 - abs(gameBall.v.x);
 		player1left.top = 0;
 		player1left.left = 0;
 		player1left.height = 200;
