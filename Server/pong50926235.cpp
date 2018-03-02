@@ -73,10 +73,10 @@ using namespace std;
 
 	void Pong::playerScore(PLAYER player) {
 		//reset ball to center screen and choose random direction
-		gameBall.x = this->width / 2;
-		gameBall.y = this->height / 2;
+		gameBall.x = this->gameBoard.width / 2;
+		gameBall.y = this->gameBoard.height / 2;
 		gameBall.v.x = randomDirection(gameBall.speed * -1, gameBall.speed);
-		gameBall.v.y = 5 - abs(gameBall.v.x);
+		gameBall.v.y = gameBall.speed - abs(gameBall.v.x);
 
 		// player scores 
 		switch (player) {
@@ -146,23 +146,23 @@ using namespace std;
 
 	void Pong::init(){
 		gameBall.owner = p1;
-		gameBall.x = width / 2;
-		gameBall.y = height / 2;
+		gameBall.x = gameBoard.width / 2;
+		gameBall.y = gameBoard.height / 2;
 		gameBall.v.x = randomDirection(gameBall.speed * -1, gameBall.speed);
-		gameBall.v.y = 5 - abs(gameBall.v.x);
+		gameBall.v.y = gameBall.speed - abs(gameBall.v.x);
 		player1left.top = 0;
 		player1left.left = 0;
 		player1left.height = 200;
 		player1left.width = 10;
 		player2right.top = 0;
-		player2right.left = width - 10;
+		player2right.left = gameBoard.width - 10;
 		player2right.height = 200;
 		player2right.width = 10;
 		player3top.top = 0;
 		player3top.left = 0;
 		player3top.height = 10;
 		player3top.width = 200;
-		player4bottom.top = height - 10;
+		player4bottom.top = gameBoard.height - 10;
 		player4bottom.left = 0;
 		player4bottom.height = 10;
 		player4bottom.width = 200;

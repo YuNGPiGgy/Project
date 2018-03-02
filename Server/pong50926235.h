@@ -74,8 +74,6 @@ private:
 
 
 	bool Intersect(paddle paddle, ball ball); //check intersect of any two objects
-	unsigned int width;
-	unsigned int height;
 	ball gameBall;
 	paddle player1left;
 	paddle player2right;

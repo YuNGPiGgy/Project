@@ -53,7 +53,7 @@ public:
 ***************************************************************/
 webSocket server;
 map<int, string> clientID_username_map;
-Pong pong(600, 800);
+Pong pong(500, 500);
 int playerCount = 0;
 priority_queue<input, vector<input>, Compare> inputTimeQueue;
 
@@ -70,13 +70,17 @@ void openHandler(int clientID){
 			player_num = i;
 	}
 	if (player_num == -1) {
-		if (playerCount > 4)
+		if (playerCount >= 4)
 			return;
-		else if (playerCount == 4)
+		else if (playerCount == 3) {
+			players[playerCount].clientID = clientID;
+			player_num = ++playerCount;
 			pong.init();
+			cout << "4 players have joined";
+		}
 		else {
 			players[playerCount].clientID = clientID;
-			player_num = playerCount++;
+			player_num = ++playerCount;
 		}
 	}
 
@@ -103,6 +107,7 @@ void messageHandler(int clientID, string message){
 /* called once per select() loop */
 int interval_clocks = CLOCKS_PER_SEC * INTERVAL_MS / 1000;
 
+//Run entire input log in order of timestamp
 void runInputQueue() {
 	int size = inputTimeQueue.size();
 	for (int i = 0; i < size; i++) {
@@ -115,7 +120,7 @@ void runInputQueue() {
 void periodicHandler(){
     static clock_t next = clock() + interval_clocks;
     clock_t current = clock();
-    if (current >= next){
+    if (current >= next && playerCount == 4){
 		runInputQueue();
         vector<int> clientIDs = server.getClientIDs();
         for (int i = 0; i < clientIDs.size(); i++)
@@ -154,10 +159,12 @@ void parseStringUpdatePacket(int clientID, string message){
 		}
 	}
 	Pong::PLAYER player = static_cast<Pong::PLAYER>(player_num);
+
+	// Add inputs to the Priority Queue such that the top of the queue has the lowest timestamp
 	if (tokens.size() >= 3) {
 		long timestamp = 0;
 		timestamp = std::stol(tokens[2]);
-		timestamp = artificialLatency(timestamp, 0 /*fixed*/, 0, 0); //0 =fixed, 1=random, 2=incremental (min, max) for incremental
+		timestamp = artificialLatency(timestamp, 2, 0, 0); //0 =fixed, 1=random, 2=incremental (min, max) for incremental
 		inputTimeQueue.push(input(player_num, tokens[1], timestamp));
 	}
 }
@@ -183,6 +190,8 @@ vector<string> split(string toSplit){
 	0 = fixed		(does not use min and max)
 	1 = random		(uses min and max)
 	2 = incremental (uses min and max)
+
+	return the timestamp with added latency determined by the type
 *************************************************************************/
 int FIXED_LATENCY = 15;
 int incrementalLatStep = 0;

@@ -162,14 +162,13 @@
         this.ball = new Ball();
         this.ball.x = this.width / 2;
         this.ball.y = this.height / 2;
-        this.ball.vy = Math.floor(Math.random() * 12 - 6);
-        this.ball.vx = 7 - Math.abs(this.ball.vy);
+        this.ball.vy = 0;
+        this.ball.vx = 0;
     }
 
     //"ballPosX | ballPosY | ballDirX | ballDirY | paddle1top | paddle2top | paddle3left | paddle4left | scoreP1 | scoreP2 | scoreP3 | scoreP4"
     Game.prototype.draw = function (bX, bY, bvX, bvY, p1T, p2T, p3L, p4L, s1, s2, s3, s4) {
         this.context.clearRect(0, 0, this.width, this.height);
-        console.log(bX.toString() + bY.toString());
         this.ball.draw(this.context, bX, bY);
 
         this.p1.draw(this.context, 5, p1T);
@@ -222,8 +221,8 @@
 
     // BALL
     function Ball() {
-        this.x = 0;
-        this.y = 0;
+        this.x = 10;
+        this.y = 10;
         this.vx = 0;
         this.vy = 0;
         this.width = 4;
@@ -282,8 +281,7 @@
     function MainLoop() {
         // Call the main loop again at a frame rate of 30fps
         game.updateInputs();
-        game.draw();
-      //  setTimeout(MainLoop, 33.3333);
+        setTimeout(MainLoop, 33.3333);
     }
 
     // Start the game execution
