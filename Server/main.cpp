@@ -12,6 +12,8 @@
 
 using namespace std;
 
+long artificialLatency(long timestamp, int type, int min, int max);
+
 /*********************************************
 
 				HELPER CLASSES 
@@ -80,7 +82,6 @@ void closeHandler(int clientID){
 
 /* called when a client sends a message to the server */
 void messageHandler(int clientID, string message){	
-   
     parseStringUpdatePacket(clientID, message);
 }
 
@@ -138,7 +139,8 @@ void parseStringUpdatePacket(int clientID, string message){
 	}
 	Pong::PLAYER player = static_cast<Pong::PLAYER>(player_num);
 	if (tokens.size() >= 3) {
-		long timestamp = std::stol(tokens[2]);
+		long timestamp = 0;
+		timestamp = std::stol(tokens[2]);
 		timestamp = artificialLatency(timestamp, 0 /*fixed*/, 0, 0); //0 =fixed, 1=random, 2=incremental (min, max) for incremental
 		inputTimeQueue.push(input(player_num, tokens[1], timestamp));
 	}

@@ -186,18 +186,20 @@
     // To which Y direction the paddle is moving
     Game.prototype.updateInputs = function () {
         var input = ''
+        var now = Date.now().toString();
+        now = now.substr(now.length - 9, now.length);
         if (this.keys.isPressed(37)) { // LEFT
-            input += username + "|L|" + Date.now().toString();
+            input += username + "|L|" + now;
             send(input);
         } else if (this.keys.isPressed(38)) { // UP
-            input += username + "|U|" + Date.now().toString();
+            input += username + "|U|" + now;
             send(input);
             console.log(input);
         } else if (this.keys.isPressed(39)) { // RIGHT
-            input += username + "|R|" + Date.now().toString();
+            input += username + "|R|" + now;
             send(input);
         } else if (this.keys.isPressed(40)) { // DOWN
-            input += username + "|D|" + Date.now().toString();
+            input += username + "|D|" + now;
             send(input);
         }
     };
