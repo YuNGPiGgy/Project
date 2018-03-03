@@ -53,14 +53,14 @@ using namespace std;
 				playerScore(gameBall.owner);
 		}
 		else if (gameBall.y < gameBall.radius ) {
-			if (Intersect(player4bottom, gameBall))
-				gameBall.owner = p4;
+			if (Intersect(player3top, gameBall))
+				gameBall.owner = p3;
 			else
 				playerScore(gameBall.owner);
 		}
 		else if (gameBall.y + gameBall.radius > gameBoard.height - gameBall.radius) {
-			if (Intersect(player3top, gameBall))
-				gameBall.owner = p3;
+			if (Intersect(player4bottom, gameBall))
+				gameBall.owner = p4;
 			else
 				playerScore(gameBall.owner);
 		}
@@ -183,7 +183,7 @@ using namespace std;
 
 	/***************************************************************
 		Send gamestate as string in format (without spaces):
-		"ballPosX | ballPosY | ballDirX | ballDirY | paddle1top | paddle2top | paddle3left | paddle4left | scoreP1 | scoreP2 | scoreP3 | scoreP4"
+		"ballPosX | ballPosY | ballDirX | ballDirY | paddle1top | paddle2top | paddle3left | paddle4left | scoreP1 | scoreP2 | scoreP3 | scoreP4 | ballOwner"
 		where:
 		paddle1 is p1(left)
 		paddle2 is p2(right)
@@ -202,6 +202,7 @@ using namespace std;
 		if (player4bottom.buttonDownMovement != 0)
 			updatePaddle(p4, player4bottom.buttonDownMovement);
 
+		string colors[] = { "red", "blue", "yellow", "green" };
 		string returnString = ""; 
 		returnString += to_string(gameBall.x)				+ '|' + 
 						to_string(gameBall.y)				+ '|' + 
@@ -214,16 +215,19 @@ using namespace std;
 						to_string(score.p1)					+ '|' +
 						to_string(score.p2)					+ '|' +
 						to_string(score.p3)					+ '|' +
-						to_string(score.p4);
+						to_string(score.p4)					+ '|' +
+						colors[(int)gameBall.owner];
 		return returnString; 
 	}
 
 	
 	bool Pong::Intersect(paddle paddle, ball ball) {
-		return (ball.x < paddle.left + paddle.width && ball.y - ball.radius < paddle.top && ball.y > paddle.top - paddle.height)	||		//intersection on left 
-				(ball.x + ball.radius > paddle.left && ball.y - ball.radius < paddle.top && ball.y > paddle.top - paddle.height)	||		//intersection on right
-				(ball.y > paddle.top - paddle.height && ball.x + ball.radius > paddle.left && ball.x < paddle.left + paddle.width)	||		//intersection at top
-				(ball.y - ball.radius < paddle.top && ball.x + ball.radius > paddle.left && ball.x < paddle.left + paddle.width);			//intersection at bottom
+		ball.y >= paddle.top && ball.y + ball.radius <= paddle.top + paddle.height
+
+		return (ball.x < paddle.left + paddle.width && ball.y + ball.radius >= paddle.top && ball.y  <= paddle.top + paddle.height)	||		//intersection on left 
+				(ball.x + ball.radius > paddle.left && ball.y + ball.radius >= paddle.top && ball.y <= paddle.top + paddle.height)	||		//intersection on right
+				(ball.y + ball.radius > paddle.top && ball.x + ball.radius > paddle.left && ball.x < paddle.left + paddle.width)	||						//intersection at bottom
+				(ball.y < paddle.top + paddle.height && ball.x + ball.radius > paddle.left && ball.x < paddle.left + paddle.width);			//intersection at top
 	}
 
 

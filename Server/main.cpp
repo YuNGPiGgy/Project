@@ -8,11 +8,13 @@
 #include <process.h>
 #include "pong50926235.h"
 #include <queue>
+#include <chrono>
+#include <ctime>
 #define INTERVAL_MS 10
 
 using namespace std;
 
-long artificialLatency(long timestamp, int type, int min, int max);
+chrono::system_clock::time_point artificialLatency(chrono::system_clock::time_point timestamp, int type, int min, int max);
 
 /*********************************************
 
@@ -28,8 +30,8 @@ class input {
 public:
 	int playerNum;
 	string inputChar;
-	long time;
-	input(int p, string inputChar, long time) {
+	chrono::system_clock::time_point time;
+	input(int p, string inputChar, chrono::system_clock::time_point time) {
 		this->playerNum = p;
 		this->inputChar = inputChar;
 		this->time = time;
@@ -163,8 +165,7 @@ void parseStringUpdatePacket(int clientID, string message){
 
 	// Add inputs to the Priority Queue such that the top of the queue has the lowest timestamp
 	if (tokens.size() >= 3) {
-		long timestamp = 0;
-		timestamp = std::stol(tokens[2]);
+		chrono::system_clock::time_point timestamp = chrono::system_clock::now();
 		timestamp = artificialLatency(timestamp, 2, 0, 0); //0 =fixed, 1=random, 2=incremental (min, max) for incremental
 		inputTimeQueue.push(input(player_num, tokens[1], timestamp));
 	}
@@ -197,21 +198,21 @@ vector<string> split(string toSplit){
 int FIXED_LATENCY = 15;
 int incrementalLatStep = 0;
 
-long artificialLatency(long timestamp, int type, int min, int max) {
-	long toReturn = timestamp;
+chrono::system_clock::time_point artificialLatency(chrono::system_clock::time_point timestamp, int type, int min, int max) {
+	chrono::time_point<chrono::system_clock> toReturn = timestamp;
 	switch (type) {
 	case 0: 
-		toReturn += FIXED_LATENCY;
+		toReturn = toReturn + chrono::milliseconds{ FIXED_LATENCY };
 		break;
 
 	case 1: 
-		toReturn += rand() % max + min;
+		toReturn = toReturn + chrono::milliseconds{ rand() % max + min };
 		break;
 
 	case 2: 
 		if (incrementalLatStep + 1 + min > max)
 			incrementalLatStep = 0;
-		toReturn += min + incrementalLatStep++;
+		toReturn = toReturn + chrono::milliseconds{ min + incrementalLatStep++ };
 	}
 
 	return toReturn;
