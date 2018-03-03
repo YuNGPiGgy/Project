@@ -67,26 +67,23 @@ player * players;
 /* called when a client connects */
 void openHandler(int clientID){
 	int player_num = -1;
-	for (int i = 0; i < 4; ++i) {
-		if (clientID == players[i].clientID)
-			player_num = i;
-	}
-	if (player_num == -1) {
-		if (playerCount >= 4)
-			return;
-		else if (playerCount == 3) {
-			players[playerCount].clientID = clientID;
-			player_num = ++playerCount;
+	if (playerCount == 4)
+		return;
+	else {
+		for (int i = 0; i < 4; ++i) {
+			if (players[i].clientID == -1) {
+				players[i].clientID = clientID;
+				player_num = i;
+				break;
+			}
+		}
+		++playerCount;
+		if (playerCount == 4) {
 			pong.init();
 			cout << "4 players have joined";
 		}
-		else {
-			players[playerCount].clientID = clientID;
-			player_num = ++playerCount;
-		}
 	}
-
-    server.wsSend(clientID, to_string(player_num));
+	server.wsSend(clientID, to_string(player_num));
 }
 
 
@@ -153,16 +150,9 @@ void parseStringUpdatePacket(int clientID, string message){
 
 	int player_num = -1;
 	for (int i = 0; i < 4; ++i) {
-		if (clientID == players[i].clientID)
+		if (clientID == players[i].clientID) {
+			players[i].username = tokens[0];
 			player_num = i;
-	}
-	if (player_num == -1) {
-		if (playerCount >= 4)
-			return;
-		else {
-			players[playerCount].clientID = clientID;
-			players[playerCount].username = tokens[0];
-			player_num = playerCount++;
 		}
 	}
 	Pong::PLAYER player = static_cast<Pong::PLAYER>(player_num);
@@ -225,6 +215,8 @@ chrono::system_clock::time_point artificialLatency(chrono::system_clock::time_po
 int main(int argc, char *argv[])
 {
 	players = new player[4];
+	for (int i = 0; i < 4; ++i)
+		players[i].clientID = i;
 
 	/* set event handler */
 	server.setOpenHandler(openHandler);
