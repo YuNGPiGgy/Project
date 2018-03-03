@@ -35,11 +35,11 @@ private:
 			this->y = 0;
 			this->v.x = 2;
 			this->v.y = 2;
-			this->speed = 2;
-			this->radius = 20;
+			this->speed = 1;
+			this->radius = 10;
 			this->owner = p1;
 		}
-        ball(int x, int y, int velX, int velY, PLAYER owner, int speed=2, int radius=20){
+        ball(int x, int y, int velX, int velY, PLAYER owner, int speed=1, int radius=10){
             this->x = x;
             this->y = y;
             this->v.x = velX;
@@ -55,8 +55,8 @@ private:
 			int y;
 		};
 		velocity v;
-		int speed = 2;
-		int radius = 20;
+		int speed;
+		int radius;
 		PLAYER owner;
 	};
 
@@ -81,5 +81,6 @@ private:
 	paddle player4bottom;
 	board gameBoard;
 	score score;
+	int paddleSpeed;
 };
 #endif

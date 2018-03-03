@@ -98,24 +98,24 @@ using namespace std;
 	void Pong::updatePaddle(PLAYER player, int paddleMove){
 		switch (player) {
 		case p1: if (paddleMove == -1)
-						this->player1left.top--;
+						this->player1left.top += paddleSpeed;
 					else if (paddleMove == 1)
-						this->player1left.top++;
+						this->player1left.top -= paddleSpeed;
 			break;
 		case p2: if (paddleMove == -1)
-						this->player2right.top--;
+						this->player2right.top += paddleSpeed;
 					else if (paddleMove == 1)
-						this->player2right.top++;
+						this->player2right.top -= paddleSpeed;
 			break;
 		case p3: if (paddleMove == -1)
-						this->player3top.left--;
+						this->player3top.left -= paddleSpeed;
 					else if (paddleMove == 1)
-						this->player3top.left++;
+						this->player3top.left += paddleSpeed;
 			break;
 		case p4: if (paddleMove == -1)
-						this->player4bottom.left--;
+						this->player4bottom.left -= paddleSpeed;
 					else if (paddleMove == 1)
-						this->player4bottom.left++;
+						this->player4bottom.left += paddleSpeed;
 			break;
 		}
 	}
@@ -145,27 +145,30 @@ using namespace std;
 	}
 
 	void Pong::init(){
+		paddleSpeed = 4;
 		gameBall.owner = p1;
+		gameBall.radius = 10;
+		gameBall.speed = 1;
 		gameBall.x = gameBoard.width / 2;
 		gameBall.y = gameBoard.height / 2;
 		gameBall.v.x = randomDirection(gameBall.speed * -1, gameBall.speed);
 		gameBall.v.y = gameBall.speed - abs(gameBall.v.x);
-		player1left.top = 0;
-		player1left.left = 0;
-		player1left.height = 200;
-		player1left.width = 10;
-		player2right.top = 0;
-		player2right.left = gameBoard.width - 10;
-		player2right.height = 200;
-		player2right.width = 10;
-		player3top.top = 0;
-		player3top.left = 0;
-		player3top.height = 10;
-		player3top.width = 200;
-		player4bottom.top = gameBoard.height - 10;
-		player4bottom.left = 0;
-		player4bottom.height = 10;
-		player4bottom.width = 200;
+		player1left.top = gameBoard.height / 2;
+		player1left.left = 5;
+		player1left.height = 75;
+		player1left.width = 3;
+		player2right.top = gameBoard.height / 2;
+		player2right.left = gameBoard.width - 5;
+		player2right.height = 75;
+		player2right.width = 3;
+		player3top.top = 5;
+		player3top.left = gameBoard.width / 2;
+		player3top.height = 3;
+		player3top.width = 75;
+		player4bottom.top = gameBoard.height - 5;
+		player4bottom.left = gameBoard.width / 2;
+		player4bottom.height = 3;
+		player4bottom.width = 75;
 		score.p1 = 0;
 		score.p2 = 0;
 		score.p3 = 0;
