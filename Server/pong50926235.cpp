@@ -222,8 +222,6 @@ using namespace std;
 
 	
 	bool Pong::Intersect(paddle paddle, ball ball) {
-		ball.y >= paddle.top && ball.y + ball.radius <= paddle.top + paddle.height
-
 		return (ball.x < paddle.left + paddle.width && ball.y + ball.radius >= paddle.top && ball.y  <= paddle.top + paddle.height)	||		//intersection on left 
 				(ball.x + ball.radius > paddle.left && ball.y + ball.radius >= paddle.top && ball.y <= paddle.top + paddle.height)	||		//intersection on right
 				(ball.y + ball.radius > paddle.top && ball.x + ball.radius > paddle.left && ball.x < paddle.left + paddle.width)	||						//intersection at bottom
