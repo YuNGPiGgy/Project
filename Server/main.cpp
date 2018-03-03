@@ -14,7 +14,7 @@
 
 using namespace std;
 
-chrono::system_clock::time_point artificialLatency(chrono::system_clock::time_point timestamp, int type, int min, int max);
+chrono::system_clock::duration artificialLatency(chrono::system_clock::duration timestamp, int type, int min, int max);
 
 /*********************************************
 
@@ -30,11 +30,13 @@ class input {
 public:
 	int playerNum;
 	string inputChar;
-	chrono::system_clock::time_point time;
-	input(int p, string inputChar, chrono::system_clock::time_point time) {
+	chrono::system_clock::duration time;
+	chrono::system_clock::duration latencyAdded;
+	input(int p, string inputChar, chrono::system_clock::duration time, chrono::system_clock::duration latencyAdded) {
 		this->playerNum = p;
 		this->inputChar = inputChar;
 		this->time = time;
+		this->latencyAdded = latencyAdded;
 	}
 };
 
@@ -112,7 +114,7 @@ void runInputQueue() {
 	int size = inputTimeQueue.size();
 	for (int i = 0; i < size; i++) {
 		input in = inputTimeQueue.top();
-		if (in.time <= chrono::system_clock::now()) {
+		if (in.time.count() <= chrono::system_clock::now().time_since_epoch().count()) {
 			pong.updateInputs(static_cast<Pong::PLAYER>(in.playerNum), in.inputChar);
 			inputTimeQueue.pop();
 		}
@@ -159,9 +161,11 @@ void parseStringUpdatePacket(int clientID, string message){
 
 	// Add inputs to the Priority Queue such that the top of the queue has the lowest timestamp
 	if (tokens.size() >= 3) {
-		chrono::system_clock::time_point timestamp = chrono::system_clock::now();
-		timestamp = artificialLatency(timestamp, 0, 0, 0); //0 =fixed, 1=random, 2=incremental (min, max) for incremental
-		inputTimeQueue.push(input(player_num, tokens[1], timestamp));
+		chrono::system_clock::duration now = chrono::system_clock::now().time_since_epoch();
+		chrono::system_clock::duration timestamp = artificialLatency(now, 2, 5, 200); //0 =fixed, 1=random, 2=incremental (min, max) for incremental
+		inputTimeQueue.push(input(player_num, tokens[1], timestamp, timestamp - now));
+		//now = chrono::time_point_cast<chrono::milliseconds>(now);
+		cout << endl << chrono::duration_cast<chrono::milliseconds>(now).count() << " " << chrono::duration_cast<chrono::milliseconds>(timestamp - now).count();
 	}
 }
 
@@ -192,8 +196,8 @@ vector<string> split(string toSplit){
 int FIXED_LATENCY = 200;
 int incrementalLatStep = 0;
 
-chrono::system_clock::time_point artificialLatency(chrono::system_clock::time_point timestamp, int type, int min, int max) {
-	chrono::time_point<chrono::system_clock> toReturn = timestamp;
+chrono::system_clock::duration artificialLatency(chrono::system_clock::duration timestamp, int type, int min, int max) {
+	chrono::system_clock::duration toReturn = timestamp;
 	switch (type) {
 	case 0: 
 		toReturn = toReturn + chrono::milliseconds{ FIXED_LATENCY };
