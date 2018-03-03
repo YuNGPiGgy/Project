@@ -44,7 +44,7 @@ class Compare
 public:
 	bool operator() (input input1, input input2)
 	{
-		return input1.time < input2.time;
+		return input1.time > input2.time;
 	}
 };
 
@@ -115,8 +115,12 @@ void runInputQueue() {
 	int size = inputTimeQueue.size();
 	for (int i = 0; i < size; i++) {
 		input in = inputTimeQueue.top();
-		pong.updateInputs(static_cast<Pong::PLAYER>(in.playerNum), in.inputChar);
-		inputTimeQueue.pop();
+		if (in.time <= chrono::system_clock::now()) {
+			pong.updateInputs(static_cast<Pong::PLAYER>(in.playerNum), in.inputChar);
+			inputTimeQueue.pop();
+		}
+		else
+			break;
 	}
 }
 
@@ -166,7 +170,7 @@ void parseStringUpdatePacket(int clientID, string message){
 	// Add inputs to the Priority Queue such that the top of the queue has the lowest timestamp
 	if (tokens.size() >= 3) {
 		chrono::system_clock::time_point timestamp = chrono::system_clock::now();
-		timestamp = artificialLatency(timestamp, 2, 0, 0); //0 =fixed, 1=random, 2=incremental (min, max) for incremental
+		timestamp = artificialLatency(timestamp, 0, 0, 0); //0 =fixed, 1=random, 2=incremental (min, max) for incremental
 		inputTimeQueue.push(input(player_num, tokens[1], timestamp));
 	}
 }
@@ -195,7 +199,7 @@ vector<string> split(string toSplit){
 
 	return the timestamp with added latency determined by the type
 *************************************************************************/
-int FIXED_LATENCY = 15;
+int FIXED_LATENCY = 200;
 int incrementalLatStep = 0;
 
 chrono::system_clock::time_point artificialLatency(chrono::system_clock::time_point timestamp, int type, int min, int max) {
